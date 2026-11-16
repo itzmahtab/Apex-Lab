@@ -99,17 +99,34 @@ export class OpenF1Client {
     return `${this.base}/${path}${qs ? `?${qs}` : ""}`;
   }
 
+  /**
+   * Cached GET. Entries are stored as `{ d, f }` (data, fresh-until) and kept for at least STALE_KEEP_S.
+   * Fresh hit → returned directly. Stale hit → upstream is tried; if upstream fails, the stale copy is
+   * served (stale-if-error), so a rate-limited or offline upstream degrades to "slightly old" not "broken".
+   */
   async list<T>(path: string, params: Params, schema: z.ZodType<T>, ttlSeconds: number): Promise<T[]> {
     const url = this.url(path, params);
     const hit = await this.cache.get(url).catch(() => null);
-    if (hit != null) return z.array(schema).parse(JSON.parse(hit));
+    let stale: T[] | null = null;
+    if (hit != null) {
+      const entry = readEntry(hit);
+      const parsed = entry ? z.array(schema).safeParse(entry.d) : null;
+      if (entry && parsed?.success) {
+        if (entry.f > Date.now()) return parsed.data;
+        stale = parsed.data;
+      }
+    }
     const pending = this.inflight.get(url) as Promise<T[]> | undefined;
     if (pending) return pending;
     const p = this.schedule(() => this.fetchWithRetry(url)).then(async (body) => {
       const parsed = z.array(schema).safeParse(body);
       if (!parsed.success) throw new UpstreamError(`Unexpected response shape from OpenF1 /${path}`);
-      await this.cache.put(url, JSON.stringify(parsed.data), ttlSeconds).catch(() => undefined);
+      const entry = JSON.stringify({ d: parsed.data, f: Date.now() + ttlSeconds * 1000 });
+      await this.cache.put(url, entry, Math.max(ttlSeconds, STALE_KEEP_S)).catch(() => undefined);
       return parsed.data;
+    }).catch((e) => {
+      if (stale) return stale;
+      throw e;
     }).finally(() => this.inflight.delete(url));
     this.inflight.set(url, p);
     return p;
@@ -148,6 +165,18 @@ export class OpenF1Client {
     }
     throw lastErr instanceof UpstreamError ? lastErr : new UpstreamError("OpenF1 is unreachable right now");
   }
+}
+
+/** How long a cache entry is kept after it stops being fresh, for stale-if-error. */
+export const STALE_KEEP_S = 30 * 86400;
+
+function readEntry(raw: string): { d: unknown; f: number } | null {
+  try {
+    const v = JSON.parse(raw) as unknown;
+    if (Array.isArray(v)) return { d: v, f: 0 }; // legacy format: treat as stale
+    if (v && typeof v === "object" && "d" in v && "f" in v) return v as { d: unknown; f: number };
+  } catch { /* corrupt entry: ignore */ }
+  return null;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

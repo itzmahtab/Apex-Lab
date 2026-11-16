@@ -7,14 +7,16 @@ import assets from "./.open-next/embedded-assets.json";
 // @ts-expect-error re-exported Durable Object classes required by the OpenNext bundle
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from "./.open-next/worker.js";
 
-const table = assets as Record<string, { type: string; body: string }>;
+const table = assets as Record<string, { type: string; body: string; b64?: boolean }>;
+
+const decode = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const { pathname } = new URL(request.url);
     const a = request.method === "GET" || request.method === "HEAD" ? table[pathname] : undefined;
     if (a && pathname.startsWith("/_next/static/")) {
-      return new Response(request.method === "HEAD" ? null : a.body, {
+      return new Response(request.method === "HEAD" ? null : a.b64 ? decode(a.body) : a.body, {
         headers: { "content-type": a.type, "cache-control": "public, max-age=31536000, immutable" },
       });
     }

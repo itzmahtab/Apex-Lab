@@ -10,7 +10,8 @@
     "test": "vitest run --passWithNoTests",
     "cf:build": "opennextjs-cloudflare build && node scripts/embed-assets.mjs",
     "cf:preview": "pnpm cf:build && wrangler dev",
-    "cf:deploy": "pnpm cf:build && wrangler deploy"
+    "cf:deploy": "pnpm cf:build && wrangler deploy",
+    "warm-cache": "tsx scripts/warm-cache.mts"
   },
   "dependencies": {
     "@apexlab/analytics": "workspace:*",
@@ -35,6 +36,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7",
     "wrangler": "^4.162.0"

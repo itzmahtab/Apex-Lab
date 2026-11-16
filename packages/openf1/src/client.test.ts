@@ -46,6 +46,23 @@ describe("OpenF1Client", () => {
   });
 });
 
+describe("stale-if-error", () => {
+  it("serves a stale copy when upstream fails, and refreshes when it works", async () => {
+    const cache = new MemoryCache();
+    const url = "https://api.openf1.org/v1/x";
+    await cache.put(url, JSON.stringify({ d: [{ n: 1 }], f: Date.now() - 1 }), 60);
+    const failing = client([res(503, {}), res(503, {}), res(503, {})], { cache });
+    expect(await failing.c.list("x", {}, row, 60)).toEqual([{ n: 1 }]);
+    const ok = client([res(200, [{ n: 2 }])], { cache });
+    expect(await ok.c.list("x", {}, row, 60)).toEqual([{ n: 2 }]);
+    expect(JSON.parse((await cache.get(url))!).d).toEqual([{ n: 2 }]);
+  });
+  it("still errors when there is nothing cached", async () => {
+    const { c } = client([res(429, {}, { "retry-after": "60" })]);
+    await expect(c.list("x", {}, row, 60)).rejects.toBeInstanceOf(UpstreamError);
+  });
+});
+
 describe("caches", () => {
   it("memory cache expires and evicts", async () => {
     const m = new MemoryCache(2);
