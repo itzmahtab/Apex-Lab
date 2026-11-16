@@ -10,3 +10,5 @@ data/artifacts
 data/cache
 .open-next
 .wrangler
+test-results
+playwright-report

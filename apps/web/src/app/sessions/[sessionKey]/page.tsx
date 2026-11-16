@@ -77,7 +77,7 @@ export default async function SessionPage({ params }: P) {
           <p className="mt-1 text-muted">{s.event.name} {s.event.year} · <span className="num">{formatDay(s.session.startDate)}</span></p>
         </div>
         {top.length === 2 && (
-          <Link href={`/compare?session=${s.session.key}&a=${top[0]!.driver.key}&b=${top[1]!.driver.key}`} className="rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white hover:bg-[#ff6259]">
+          <Link href={`/compare?session=${s.session.key}&a=${top[0]!.driver.key}&b=${top[1]!.driver.key}`} className="rounded-xl bg-accent-fill px-4 py-2.5 text-sm font-medium text-white hover:bg-[#c4271b]">
             Compare {top[0]!.driver.abbreviation} vs {top[1]!.driver.abbreviation} →
           </Link>
         )}

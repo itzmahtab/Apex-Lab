@@ -13,7 +13,7 @@ See which corners decided it, where the throttle went down earlier, and share th
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-ingestion-3776ab?logo=python&logoColor=white)
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20KV-f38020?logo=cloudflare&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-46%20passing-67d5a5)
+![Tests](https://img.shields.io/badge/tests-70%20passing-67d5a5)
 ![Data](https://img.shields.io/badge/data-OpenF1-ff453a)
 
 <img src="docs/screenshots/home.png" alt="ApexLab landing page with a live Monza 2025 qualifying comparison" width="100%" />
@@ -78,14 +78,14 @@ flowchart LR
 - **Cache warming.** Workers share egress IPs, so cold requests can hit the API's rate limit. `pnpm warm-cache` pre-fills KV from outside Cloudflare using the *same client*, so the keys match exactly.
 - **A pure analytics engine** (`packages/analytics`). Normalisation, alignment, mini-sectors and the track map are all dependency-free functions with unit tests.
 - **Server-first UI.** The track map is server-rendered SVG with no client JavaScript. Only the interactive charts and selectors are client components.
-- **Accessible.** Driver identity uses colour *and* line style (solid/dashed), teammates get distinct tints, there's a data-table alternative to the charts, keyboard focus states, and reduced-motion support.
+- **Accessible, and tested for it.** Automated axe checks (WCAG 2 AA) run in CI; they caught and fixed a contrast issue and invalid list markup. Driver identity uses colour *and* line style (solid/dashed), teammates get distinct tints, there's a data-table alternative to the charts, keyboard focus states, and reduced-motion support.
 
 ## Tech stack
 
 **Web:** Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS v4, Recharts, Motion, Zod, Geist<br/>
 **Data:** OpenF1 REST API, Cloudflare Workers KV, Python 3 ingestion CLI (stdlib only)<br/>
 **Infra:** Cloudflare Workers via OpenNext, GitHub Actions CI, pnpm workspaces<br/>
-**Quality:** Vitest (33 tests), pytest (13 tests), strict type-checking across all packages
+**Quality:** Vitest (33 unit tests), pytest (13), Playwright (24 browser journeys on desktop + mobile, with axe WCAG 2 AA checks), strict type-checking, all in CI
 
 ## Repository layout
 
@@ -116,6 +116,7 @@ No API key is needed: OpenF1 is free and public. `OPENF1_CACHE_DIR` (set in `.en
 pnpm typecheck               # all packages
 pnpm test                    # Vitest
 pnpm test:py                 # pytest
+pnpm e2e                     # Playwright + axe accessibility (offline demo data)
 pnpm build                   # production build
 
 # Python: snapshot one real lap into a validated artifact

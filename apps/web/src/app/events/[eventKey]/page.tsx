@@ -40,7 +40,7 @@ export default async function EventPage({ params }: P) {
             {s.status === "completed" && (
               <div className="flex gap-2">
                 <Link href={`/sessions/${s.key}`} className="rounded-xl border border-border bg-elevated px-3 py-2 text-sm hover:border-border-strong">Results</Link>
-                <Link href={`/compare?session=${s.key}`} className="rounded-xl bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-[#ff6259]">Compare</Link>
+                <Link href={`/compare?session=${s.key}`} className="rounded-xl bg-accent-fill px-3 py-2 text-sm font-medium text-white hover:bg-[#c4271b]">Compare</Link>
               </div>
             )}
           </li>

@@ -88,7 +88,7 @@ export default function Home() {
             </div>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-6">
               {[["2023+", "seasons"], ["~3.7 Hz", "telemetry"], ["24", "mini-sectors"]].map(([v, l]) => (
-                <div key={l}><dt className="sr-only">{l}</dt><dd className="text-2xl font-semibold num">{v}</dd><div className="text-xs uppercase tracking-[0.12em] text-subtle">{l}</div></div>
+                <div key={l} className="flex flex-col-reverse"><dt className="text-xs uppercase tracking-[0.12em] text-subtle">{l}</dt><dd className="text-2xl font-semibold num">{v}</dd></div>
               ))}
             </dl>
           </div>

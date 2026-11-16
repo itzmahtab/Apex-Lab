@@ -122,7 +122,9 @@ and deployment are future work.
     lap stats), calendar, event and session pages (fastest laps, tyre strategy), share card.
 -   **Verified by running:** 33 Vitest + 13 pytest tests; production build; live API checks (Monaco 2024
     Q delta +0.154 s matches official); browser journeys on desktop and mobile with no console errors.
--   **Not done:** Playwright suite in CI, formal accessibility audit, light theme, saved comparisons,
+-   **Playwright + axe suite** (24 tests, desktop + mobile, offline demo data) added and wired into CI;
+    it found and fixed a WCAG contrast failure (white on #FF453A) and invalid <dl> markup.
+-   **Not done:** manual screen-reader audit, light theme, saved comparisons,
     driver profile pages, the workers.dev subdomain change (needs owner confirmation: it would also move
     the account's other Worker, `cou-hackathon`).
 

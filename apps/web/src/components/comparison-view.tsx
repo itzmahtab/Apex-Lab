@@ -114,8 +114,8 @@ export function ComparisonResultView({ c, children }: { c: ComparisonResult; chi
                     </div>
                   );
                 })}
-                {c.lapLengthM && <p className="text-xs text-subtle">Lap length ≈ {(c.lapLengthM / 1000).toFixed(3)} km, integrated from speed.</p>}
               </dl>
+              {c.lapLengthM && <p className="mt-3 text-xs text-subtle">Lap length ≈ {(c.lapLengthM / 1000).toFixed(3)} km, integrated from speed.</p>}
             </Card>
           )}
         </div>

@@ -9,6 +9,7 @@
     "test": "pnpm -r test",
     "test:py": "cd services/ingestion && python3 -m pytest -q",
     "fixtures": "cd services/ingestion && python3 -m apexlab_ingest.cli demo --out ../../data/fixtures/demo",
-    "db:generate": "pnpm --filter @apexlab/db generate"
+    "db:generate": "pnpm --filter @apexlab/db generate",
+    "e2e": "pnpm --filter @apexlab/web e2e"
   }
 }
