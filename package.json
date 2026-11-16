@@ -1,0 +1,14 @@
+{
+  "name": "apexlab",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev": "pnpm --filter @apexlab/web dev",
+    "build": "pnpm --filter @apexlab/web build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:py": "cd services/ingestion && python3 -m pytest -q",
+    "fixtures": "cd services/ingestion && python3 -m apexlab_ingest.cli demo --out ../../data/fixtures/demo",
+    "db:generate": "pnpm --filter @apexlab/db generate"
+  }
+}

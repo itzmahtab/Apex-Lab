@@ -115,10 +115,13 @@ and deployment are future work.
 ## Progress log
 
 -   Initial specification created.
--   Implementation status: not yet verified in a code repository.
--   Completed phases: none confirmed.
--   Next action: initialize repository and complete Phase 1, then Phase
-    2.
+-   Phases 1-10 implemented locally (see `README.md`, `docs/architecture-notes.md`).
+-   Verified by running: Vitest (analytics, contracts), pytest (ingestion), `next build`,
+    API error cases via curl, Playwright smoke on desktop and 390px mobile (no console errors,
+    no horizontal overflow, selector -> URL -> reload restores selection), Postgres migration + idempotent seed.
+-   NOT done: phases 11-14 (formal testing/Playwright suite, deployment, monetization), keyboard/reduced-motion audit,
+    real FastF1 normalization (adapter is a gated stub), light theme, saved `comparisons` rows, driver pages.
+-   Next action: review, then Phase 11 (dedicated testing) or real-data rights decision.
 
 ## Decision log template
 

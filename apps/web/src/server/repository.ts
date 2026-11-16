@@ -1,0 +1,95 @@
+import "server-only";
+import { readFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
+import {
+  artifactSchema, catalogSchema, ARTIFACT_SCHEMA_VERSION, keySchema,
+  type Catalog, type TelemetryArtifact,
+} from "@apexlab/contracts";
+import * as t from "@apexlab/db";
+import { env } from "@/env";
+import { AppError } from "./errors";
+
+/** Data access boundary. UI/API depend on this, never on files or SQL directly. */
+export interface Repository {
+  getCatalog(): Promise<Catalog>;
+  /** Returns null if the lap has no artifact. Keys must already be validated/existing in the catalog. */
+  getArtifact(sessionKey: string, driverKey: string, lap: number): Promise<TelemetryArtifact | null>;
+}
+
+function fixtureRoot(): string {
+  return resolve(env().FIXTURE_DIR ?? join(process.cwd(), "../../data/fixtures/demo"));
+}
+
+/** Path is built only from validated keys + an integer; client input never reaches the filesystem raw. */
+async function readArtifactFile(root: string, sessionKey: string, driverKey: string, lap: number) {
+  const s = keySchema.parse(sessionKey), d = keySchema.parse(driverKey);
+  if (!Number.isInteger(lap) || lap <= 0) throw new AppError("VALIDATION_ERROR", "Invalid lap number");
+  let raw: unknown;
+  try {
+    raw = JSON.parse(await readFile(join(root, "artifacts", s, `${d}-lap${lap}.json`), "utf8"));
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw new AppError("TELEMETRY_UNAVAILABLE", "Telemetry for this lap could not be read.");
+  }
+  const version = (raw as { schemaVersion?: unknown } | null)?.schemaVersion;
+  if (version !== ARTIFACT_SCHEMA_VERSION)
+    throw new AppError("UNSUPPORTED_ARTIFACT_VERSION", "This telemetry artifact needs to be reprocessed.");
+  const parsed = artifactSchema.safeParse(raw);
+  if (!parsed.success) throw new AppError("TELEMETRY_UNAVAILABLE", "Telemetry for this lap failed validation.");
+  return parsed.data;
+}
+
+export class FixtureRepository implements Repository {
+  async getCatalog() {
+    const raw = await readFile(join(fixtureRoot(), "catalog.json"), "utf8");
+    return catalogSchema.parse(JSON.parse(raw));
+  }
+  getArtifact(s: string, d: string, lap: number) { return readArtifactFile(fixtureRoot(), s, d, lap); }
+}
+
+/** Metadata from PostgreSQL (seeded via `pnpm --filter @apexlab/db seed`); telemetry arrays stay in artifact files. */
+export class DbRepository implements Repository {
+  async getCatalog(): Promise<Catalog> {
+    const { db } = dbHandle();
+    const [seasons, events, sessions, drivers, laps, arts] = await Promise.all([
+      db.select().from(t.seasons), db.select().from(t.events), db.select().from(t.sessions),
+      db.select().from(t.drivers), db.select().from(t.laps), db.select().from(t.telemetryArtifacts),
+    ]);
+    const dKey = new Map(drivers.map((d) => [d.id, d]));
+    const hasTel = new Set(arts.map((a) => `${a.sessionId}|${a.driverId}|${a.lapNumber}`));
+    return catalogSchema.parse({
+      schemaVersion: 1,
+      seasons: seasons.map((s) => ({ year: s.year, eventKeys: events.filter((e) => e.seasonId === s.id).map((e) => e.externalKey) })),
+      events: events.map((e) => ({
+        key: e.externalKey, name: e.name, circuitName: e.circuitName, countryCode: e.countryCode,
+        sessionKeys: sessions.filter((s) => s.eventId === e.id).map((s) => s.externalKey),
+      })),
+      sessions: sessions.map((s) => {
+        const ev = events.find((e) => e.id === s.eventId)!;
+        const sl = laps.filter((l) => l.sessionId === s.id);
+        const dids = [...new Set(sl.map((l) => l.driverId))];
+        return {
+          key: s.externalKey, eventKey: ev.externalKey, sessionType: s.sessionType, name: s.name,
+          drivers: dids.map((id) => ({ key: dKey.get(id)!.externalKey, abbreviation: dKey.get(id)!.abbreviation, displayName: dKey.get(id)!.displayName })),
+          laps: sl.map((l) => ({
+            driverKey: dKey.get(l.driverId)!.externalKey, lapNumber: l.lapNumber, lapTimeMs: l.lapTimeMs,
+            sector1Ms: l.sector1Ms, sector2Ms: l.sector2Ms, sector3Ms: l.sector3Ms, compound: l.compound, isValid: l.isValid,
+            hasTelemetry: hasTel.has(`${s.id}|${l.driverId}|${l.lapNumber}`),
+          })),
+          source: { name: s.sourceName, rightsStatus: s.rightsStatus },
+        };
+      }),
+    });
+  }
+  getArtifact(s: string, d: string, lap: number) { return readArtifactFile(fixtureRoot(), s, d, lap); }
+}
+
+let handle: ReturnType<typeof t.createDb> | undefined;
+function dbHandle() {
+  return (handle ??= t.createDb(env().DATABASE_URL!));
+}
+
+let repo: Repository | undefined;
+export function getRepository(): Repository {
+  return (repo ??= env().DATA_SOURCE === "db" ? new DbRepository() : new FixtureRepository());
+}
