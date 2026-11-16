@@ -1,0 +1,13 @@
+[project]
+name = "apexlab-ingest"
+version = "0.1.0"
+description = "ApexLab F1 ingestion CLI (separate from the Next.js runtime)"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+fastf1 = ["fastf1>=3.4", "pandas", "numpy"]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

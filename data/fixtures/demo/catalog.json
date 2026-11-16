@@ -1,0 +1,158 @@
+{
+ "events": [
+  {
+   "circuitName": "Synthetic Circuit",
+   "countryCode": null,
+   "key": "demo-grand-prix",
+   "name": "Demo Grand Prix (synthetic)",
+   "sessionKeys": [
+    "demo-qualifying"
+   ]
+  }
+ ],
+ "schemaVersion": 1,
+ "seasons": [
+  {
+   "eventKeys": [
+    "demo-grand-prix"
+   ],
+   "year": 2099
+  }
+ ],
+ "sessions": [
+  {
+   "drivers": [
+    {
+     "abbreviation": "DRA",
+     "displayName": "Demo Driver A",
+     "key": "demo-driver-a"
+    },
+    {
+     "abbreviation": "DRB",
+     "displayName": "Demo Driver B",
+     "key": "demo-driver-b"
+    }
+   ],
+   "eventKey": "demo-grand-prix",
+   "key": "demo-qualifying",
+   "laps": [
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-a",
+     "hasTelemetry": false,
+     "isValid": true,
+     "lapNumber": 1,
+     "lapTimeMs": 83840,
+     "sector1Ms": 27085,
+     "sector2Ms": 29309,
+     "sector3Ms": 27446
+    },
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-a",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 2,
+     "lapTimeMs": 84550,
+     "sector1Ms": 27302,
+     "sector2Ms": 29563,
+     "sector3Ms": 27685
+    },
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-a",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 3,
+     "lapTimeMs": 83728,
+     "sector1Ms": 27051,
+     "sector2Ms": 29270,
+     "sector3Ms": 27407
+    },
+    {
+     "compound": "MEDIUM",
+     "driverKey": "demo-driver-a",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 4,
+     "lapTimeMs": 84121,
+     "sector1Ms": 27170,
+     "sector2Ms": 29410,
+     "sector3Ms": 27541
+    },
+    {
+     "compound": "MEDIUM",
+     "driverKey": "demo-driver-a",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 5,
+     "lapTimeMs": 83812,
+     "sector1Ms": 27076,
+     "sector2Ms": 29299,
+     "sector3Ms": 27437
+    },
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-b",
+     "hasTelemetry": false,
+     "isValid": true,
+     "lapNumber": 1,
+     "lapTimeMs": 83596,
+     "sector1Ms": 26992,
+     "sector2Ms": 29230,
+     "sector3Ms": 27374
+    },
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-b",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 2,
+     "lapTimeMs": 84307,
+     "sector1Ms": 27209,
+     "sector2Ms": 29483,
+     "sector3Ms": 27615
+    },
+    {
+     "compound": "SOFT",
+     "driverKey": "demo-driver-b",
+     "hasTelemetry": true,
+     "isValid": false,
+     "lapNumber": 3,
+     "lapTimeMs": 83484,
+     "sector1Ms": 26959,
+     "sector2Ms": 29190,
+     "sector3Ms": 27335
+    },
+    {
+     "compound": "MEDIUM",
+     "driverKey": "demo-driver-b",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 4,
+     "lapTimeMs": 83877,
+     "sector1Ms": 27078,
+     "sector2Ms": 29330,
+     "sector3Ms": 27469
+    },
+    {
+     "compound": "MEDIUM",
+     "driverKey": "demo-driver-b",
+     "hasTelemetry": true,
+     "isValid": true,
+     "lapNumber": 5,
+     "lapTimeMs": 83568,
+     "sector1Ms": 26984,
+     "sector2Ms": 29220,
+     "sector3Ms": 27364
+    }
+   ],
+   "name": "Demo Qualifying (synthetic)",
+   "sessionType": "qualifying",
+   "source": {
+    "name": "demo-fixture",
+    "rightsStatus": "synthetic-demo"
+   }
+  }
+ ]
+}

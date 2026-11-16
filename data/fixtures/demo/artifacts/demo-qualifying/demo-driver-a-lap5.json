@@ -1,0 +1,2043 @@
+{
+ "driver": {
+  "abbreviation": "DRA",
+  "key": "demo-driver-a"
+ },
+ "lap": {
+  "isValid": true,
+  "lapTimeMs": 83812,
+  "number": 5,
+  "sector1Ms": 27076,
+  "sector2Ms": 29299,
+  "sector3Ms": 27437
+ },
+ "samples": [
+  {
+   "brakePct": 0.0,
+   "distanceM": 0.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 0.0
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 20.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 0.236
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 40.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 0.472
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 60.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 0.708
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 80.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 0.944
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 100.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 1.18
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 120.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 1.416
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 140.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 1.652
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 160.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 1.889
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 180.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 2.125
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 200.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 2.361
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 220.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 2.597
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 240.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 2.833
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 260.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 3.069
+  },
+  {
+   "brakePct": 5.4,
+   "distanceM": 280.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 0.0,
+   "timeS": 3.305
+  },
+  {
+   "brakePct": 5.1,
+   "distanceM": 300.0,
+   "gear": 8,
+   "speedKph": 302.9,
+   "throttlePct": 0.0,
+   "timeS": 3.542
+  },
+  {
+   "brakePct": 8.3,
+   "distanceM": 320.0,
+   "gear": 8,
+   "speedKph": 301.2,
+   "throttlePct": 0.0,
+   "timeS": 3.78
+  },
+  {
+   "brakePct": 12.9,
+   "distanceM": 340.0,
+   "gear": 8,
+   "speedKph": 298.3,
+   "throttlePct": 0.0,
+   "timeS": 4.02
+  },
+  {
+   "brakePct": 19.2,
+   "distanceM": 360.0,
+   "gear": 8,
+   "speedKph": 293.9,
+   "throttlePct": 0.0,
+   "timeS": 4.263
+  },
+  {
+   "brakePct": 27.3,
+   "distanceM": 380.0,
+   "gear": 8,
+   "speedKph": 287.2,
+   "throttlePct": 0.0,
+   "timeS": 4.511
+  },
+  {
+   "brakePct": 36.8,
+   "distanceM": 400.0,
+   "gear": 7,
+   "speedKph": 277.7,
+   "throttlePct": 0.0,
+   "timeS": 4.765
+  },
+  {
+   "brakePct": 47.1,
+   "distanceM": 420.0,
+   "gear": 7,
+   "speedKph": 264.8,
+   "throttlePct": 0.0,
+   "timeS": 5.03
+  },
+  {
+   "brakePct": 57.1,
+   "distanceM": 440.0,
+   "gear": 7,
+   "speedKph": 248.1,
+   "throttlePct": 0.0,
+   "timeS": 5.311
+  },
+  {
+   "brakePct": 65.3,
+   "distanceM": 460.0,
+   "gear": 6,
+   "speedKph": 227.8,
+   "throttlePct": 0.0,
+   "timeS": 5.613
+  },
+  {
+   "brakePct": 69.9,
+   "distanceM": 480.0,
+   "gear": 6,
+   "speedKph": 204.3,
+   "throttlePct": 0.0,
+   "timeS": 5.947
+  },
+  {
+   "brakePct": 69.3,
+   "distanceM": 500.0,
+   "gear": 5,
+   "speedKph": 179.0,
+   "throttlePct": 0.0,
+   "timeS": 6.323
+  },
+  {
+   "brakePct": 62.6,
+   "distanceM": 520.0,
+   "gear": 4,
+   "speedKph": 153.6,
+   "throttlePct": 0.0,
+   "timeS": 6.757
+  },
+  {
+   "brakePct": 49.5,
+   "distanceM": 540.0,
+   "gear": 4,
+   "speedKph": 130.3,
+   "throttlePct": 0.0,
+   "timeS": 7.266
+  },
+  {
+   "brakePct": 30.9,
+   "distanceM": 560.0,
+   "gear": 3,
+   "speedKph": 111.5,
+   "throttlePct": 0.0,
+   "timeS": 7.865
+  },
+  {
+   "brakePct": 8.7,
+   "distanceM": 580.0,
+   "gear": 3,
+   "speedKph": 99.3,
+   "throttlePct": 0.0,
+   "timeS": 8.553
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 600.0,
+   "gear": 3,
+   "speedKph": 95.1,
+   "throttlePct": 93.8,
+   "timeS": 9.299
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 620.0,
+   "gear": 3,
+   "speedKph": 99.3,
+   "throttlePct": 100.0,
+   "timeS": 10.045
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 640.0,
+   "gear": 3,
+   "speedKph": 111.5,
+   "throttlePct": 100.0,
+   "timeS": 10.733
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 660.0,
+   "gear": 4,
+   "speedKph": 130.3,
+   "throttlePct": 100.0,
+   "timeS": 11.331
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 680.0,
+   "gear": 4,
+   "speedKph": 153.6,
+   "throttlePct": 100.0,
+   "timeS": 11.841
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 700.0,
+   "gear": 5,
+   "speedKph": 179.0,
+   "throttlePct": 100.0,
+   "timeS": 12.275
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 720.0,
+   "gear": 6,
+   "speedKph": 204.3,
+   "throttlePct": 100.0,
+   "timeS": 12.651
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 740.0,
+   "gear": 6,
+   "speedKph": 227.8,
+   "throttlePct": 100.0,
+   "timeS": 12.984
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 760.0,
+   "gear": 7,
+   "speedKph": 248.1,
+   "throttlePct": 100.0,
+   "timeS": 13.287
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 780.0,
+   "gear": 7,
+   "speedKph": 264.8,
+   "throttlePct": 100.0,
+   "timeS": 13.567
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 800.0,
+   "gear": 7,
+   "speedKph": 277.7,
+   "throttlePct": 100.0,
+   "timeS": 13.832
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 820.0,
+   "gear": 8,
+   "speedKph": 287.2,
+   "throttlePct": 100.0,
+   "timeS": 14.087
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 840.0,
+   "gear": 8,
+   "speedKph": 293.9,
+   "throttlePct": 100.0,
+   "timeS": 14.335
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 860.0,
+   "gear": 8,
+   "speedKph": 298.3,
+   "throttlePct": 100.0,
+   "timeS": 14.578
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 880.0,
+   "gear": 8,
+   "speedKph": 301.2,
+   "throttlePct": 100.0,
+   "timeS": 14.818
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 900.0,
+   "gear": 8,
+   "speedKph": 302.9,
+   "throttlePct": 100.0,
+   "timeS": 15.056
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 920.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 15.293
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 940.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 15.529
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 960.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 15.765
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 980.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 16.001
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1000.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 16.237
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1020.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 16.473
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1040.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 16.709
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1060.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 16.945
+  },
+  {
+   "brakePct": 6.0,
+   "distanceM": 1080.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 0.0,
+   "timeS": 17.181
+  },
+  {
+   "brakePct": 6.4,
+   "distanceM": 1100.0,
+   "gear": 8,
+   "speedKph": 302.7,
+   "throttlePct": 0.0,
+   "timeS": 17.418
+  },
+  {
+   "brakePct": 11.0,
+   "distanceM": 1120.0,
+   "gear": 8,
+   "speedKph": 300.6,
+   "throttlePct": 0.0,
+   "timeS": 17.657
+  },
+  {
+   "brakePct": 17.7,
+   "distanceM": 1140.0,
+   "gear": 8,
+   "speedKph": 296.8,
+   "throttlePct": 0.0,
+   "timeS": 17.898
+  },
+  {
+   "brakePct": 26.7,
+   "distanceM": 1160.0,
+   "gear": 8,
+   "speedKph": 290.7,
+   "throttlePct": 0.0,
+   "timeS": 18.143
+  },
+  {
+   "brakePct": 37.6,
+   "distanceM": 1180.0,
+   "gear": 8,
+   "speedKph": 281.5,
+   "throttlePct": 0.0,
+   "timeS": 18.394
+  },
+  {
+   "brakePct": 49.3,
+   "distanceM": 1200.0,
+   "gear": 7,
+   "speedKph": 268.3,
+   "throttlePct": 0.0,
+   "timeS": 18.656
+  },
+  {
+   "brakePct": 59.9,
+   "distanceM": 1220.0,
+   "gear": 7,
+   "speedKph": 250.9,
+   "throttlePct": 0.0,
+   "timeS": 18.933
+  },
+  {
+   "brakePct": 66.9,
+   "distanceM": 1240.0,
+   "gear": 6,
+   "speedKph": 229.5,
+   "throttlePct": 0.0,
+   "timeS": 19.232
+  },
+  {
+   "brakePct": 67.7,
+   "distanceM": 1260.0,
+   "gear": 6,
+   "speedKph": 205.4,
+   "throttlePct": 0.0,
+   "timeS": 19.563
+  },
+  {
+   "brakePct": 60.5,
+   "distanceM": 1280.0,
+   "gear": 5,
+   "speedKph": 180.6,
+   "throttlePct": 0.0,
+   "timeS": 19.937
+  },
+  {
+   "brakePct": 45.0,
+   "distanceM": 1300.0,
+   "gear": 4,
+   "speedKph": 158.0,
+   "throttlePct": 0.0,
+   "timeS": 20.364
+  },
+  {
+   "brakePct": 22.6,
+   "distanceM": 1320.0,
+   "gear": 4,
+   "speedKph": 140.7,
+   "throttlePct": 0.0,
+   "timeS": 20.848
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1340.0,
+   "gear": 4,
+   "speedKph": 131.3,
+   "throttlePct": 78.2,
+   "timeS": 21.381
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1360.0,
+   "gear": 4,
+   "speedKph": 131.3,
+   "throttlePct": 100.0,
+   "timeS": 21.932
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1380.0,
+   "gear": 4,
+   "speedKph": 140.7,
+   "throttlePct": 100.0,
+   "timeS": 22.465
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1400.0,
+   "gear": 4,
+   "speedKph": 158.0,
+   "throttlePct": 100.0,
+   "timeS": 22.949
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1420.0,
+   "gear": 5,
+   "speedKph": 180.6,
+   "throttlePct": 100.0,
+   "timeS": 23.376
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1440.0,
+   "gear": 6,
+   "speedKph": 205.4,
+   "throttlePct": 100.0,
+   "timeS": 23.75
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1460.0,
+   "gear": 6,
+   "speedKph": 229.5,
+   "throttlePct": 100.0,
+   "timeS": 24.081
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1480.0,
+   "gear": 7,
+   "speedKph": 250.9,
+   "throttlePct": 100.0,
+   "timeS": 24.38
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1500.0,
+   "gear": 7,
+   "speedKph": 268.3,
+   "throttlePct": 100.0,
+   "timeS": 24.657
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1520.0,
+   "gear": 8,
+   "speedKph": 281.5,
+   "throttlePct": 100.0,
+   "timeS": 24.919
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1540.0,
+   "gear": 8,
+   "speedKph": 290.7,
+   "throttlePct": 100.0,
+   "timeS": 25.17
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1560.0,
+   "gear": 8,
+   "speedKph": 296.8,
+   "throttlePct": 100.0,
+   "timeS": 25.415
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1580.0,
+   "gear": 8,
+   "speedKph": 300.6,
+   "throttlePct": 100.0,
+   "timeS": 25.656
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1600.0,
+   "gear": 8,
+   "speedKph": 302.7,
+   "throttlePct": 100.0,
+   "timeS": 25.895
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1620.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 26.132
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1640.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 26.368
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1660.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 26.604
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1680.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 26.84
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 1700.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 27.076
+  },
+  {
+   "brakePct": 6.6,
+   "distanceM": 1720.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 0.0,
+   "timeS": 27.312
+  },
+  {
+   "brakePct": 4.8,
+   "distanceM": 1740.0,
+   "gear": 8,
+   "speedKph": 302.3,
+   "throttlePct": 0.0,
+   "timeS": 27.55
+  },
+  {
+   "brakePct": 7.2,
+   "distanceM": 1760.0,
+   "gear": 8,
+   "speedKph": 300.7,
+   "throttlePct": 0.0,
+   "timeS": 27.788
+  },
+  {
+   "brakePct": 10.5,
+   "distanceM": 1780.0,
+   "gear": 8,
+   "speedKph": 298.2,
+   "throttlePct": 0.0,
+   "timeS": 28.029
+  },
+  {
+   "brakePct": 14.8,
+   "distanceM": 1800.0,
+   "gear": 8,
+   "speedKph": 294.6,
+   "throttlePct": 0.0,
+   "timeS": 28.271
+  },
+  {
+   "brakePct": 20.2,
+   "distanceM": 1820.0,
+   "gear": 8,
+   "speedKph": 289.4,
+   "throttlePct": 0.0,
+   "timeS": 28.518
+  },
+  {
+   "brakePct": 26.6,
+   "distanceM": 1840.0,
+   "gear": 8,
+   "speedKph": 282.3,
+   "throttlePct": 0.0,
+   "timeS": 28.77
+  },
+  {
+   "brakePct": 34.0,
+   "distanceM": 1860.0,
+   "gear": 7,
+   "speedKph": 273.0,
+   "throttlePct": 0.0,
+   "timeS": 29.029
+  },
+  {
+   "brakePct": 41.8,
+   "distanceM": 1880.0,
+   "gear": 7,
+   "speedKph": 261.0,
+   "throttlePct": 0.0,
+   "timeS": 29.298
+  },
+  {
+   "brakePct": 49.6,
+   "distanceM": 1900.0,
+   "gear": 7,
+   "speedKph": 246.1,
+   "throttlePct": 0.0,
+   "timeS": 29.582
+  },
+  {
+   "brakePct": 56.6,
+   "distanceM": 1920.0,
+   "gear": 6,
+   "speedKph": 228.4,
+   "throttlePct": 0.0,
+   "timeS": 29.885
+  },
+  {
+   "brakePct": 62.0,
+   "distanceM": 1940.0,
+   "gear": 6,
+   "speedKph": 208.1,
+   "throttlePct": 0.0,
+   "timeS": 30.215
+  },
+  {
+   "brakePct": 64.7,
+   "distanceM": 1960.0,
+   "gear": 5,
+   "speedKph": 185.8,
+   "throttlePct": 0.0,
+   "timeS": 30.581
+  },
+  {
+   "brakePct": 64.2,
+   "distanceM": 1980.0,
+   "gear": 5,
+   "speedKph": 162.3,
+   "throttlePct": 0.0,
+   "timeS": 30.995
+  },
+  {
+   "brakePct": 59.8,
+   "distanceM": 2000.0,
+   "gear": 4,
+   "speedKph": 138.8,
+   "throttlePct": 0.0,
+   "timeS": 31.475
+  },
+  {
+   "brakePct": 51.3,
+   "distanceM": 2020.0,
+   "gear": 3,
+   "speedKph": 116.7,
+   "throttlePct": 0.0,
+   "timeS": 32.04
+  },
+  {
+   "brakePct": 39.1,
+   "distanceM": 2040.0,
+   "gear": 3,
+   "speedKph": 97.6,
+   "throttlePct": 0.0,
+   "timeS": 32.716
+  },
+  {
+   "brakePct": 23.8,
+   "distanceM": 2060.0,
+   "gear": 3,
+   "speedKph": 82.7,
+   "throttlePct": 0.0,
+   "timeS": 33.52
+  },
+  {
+   "brakePct": 6.7,
+   "distanceM": 2080.0,
+   "gear": 2,
+   "speedKph": 73.3,
+   "throttlePct": 0.0,
+   "timeS": 34.45
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2100.0,
+   "gear": 2,
+   "speedKph": 70.1,
+   "throttlePct": 84.3,
+   "timeS": 35.462
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2120.0,
+   "gear": 2,
+   "speedKph": 73.3,
+   "throttlePct": 100.0,
+   "timeS": 36.474
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2140.0,
+   "gear": 3,
+   "speedKph": 82.7,
+   "throttlePct": 100.0,
+   "timeS": 37.404
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2160.0,
+   "gear": 3,
+   "speedKph": 97.6,
+   "throttlePct": 100.0,
+   "timeS": 38.208
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2180.0,
+   "gear": 3,
+   "speedKph": 116.7,
+   "throttlePct": 100.0,
+   "timeS": 38.884
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2200.0,
+   "gear": 4,
+   "speedKph": 138.8,
+   "throttlePct": 100.0,
+   "timeS": 39.45
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2220.0,
+   "gear": 5,
+   "speedKph": 162.3,
+   "throttlePct": 100.0,
+   "timeS": 39.929
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2240.0,
+   "gear": 5,
+   "speedKph": 185.8,
+   "throttlePct": 100.0,
+   "timeS": 40.343
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2260.0,
+   "gear": 6,
+   "speedKph": 208.1,
+   "throttlePct": 100.0,
+   "timeS": 40.709
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2280.0,
+   "gear": 6,
+   "speedKph": 228.4,
+   "throttlePct": 100.0,
+   "timeS": 41.039
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2300.0,
+   "gear": 7,
+   "speedKph": 246.1,
+   "throttlePct": 100.0,
+   "timeS": 41.342
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2320.0,
+   "gear": 7,
+   "speedKph": 261.0,
+   "throttlePct": 100.0,
+   "timeS": 41.626
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2340.0,
+   "gear": 7,
+   "speedKph": 273.0,
+   "throttlePct": 100.0,
+   "timeS": 41.895
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2360.0,
+   "gear": 8,
+   "speedKph": 282.3,
+   "throttlePct": 100.0,
+   "timeS": 42.155
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2380.0,
+   "gear": 8,
+   "speedKph": 289.4,
+   "throttlePct": 100.0,
+   "timeS": 42.406
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2400.0,
+   "gear": 8,
+   "speedKph": 294.6,
+   "throttlePct": 100.0,
+   "timeS": 42.653
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2420.0,
+   "gear": 8,
+   "speedKph": 298.2,
+   "throttlePct": 100.0,
+   "timeS": 42.896
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2440.0,
+   "gear": 8,
+   "speedKph": 300.7,
+   "throttlePct": 100.0,
+   "timeS": 43.136
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2460.0,
+   "gear": 8,
+   "speedKph": 302.3,
+   "throttlePct": 100.0,
+   "timeS": 43.375
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2480.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 43.612
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2500.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 43.848
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2520.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 44.084
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2540.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 44.32
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2560.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 44.556
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2580.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 44.792
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2600.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 45.028
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2620.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 45.264
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2640.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 88.5,
+   "timeS": 45.501
+  },
+  {
+   "brakePct": 4.6,
+   "distanceM": 2660.0,
+   "gear": 8,
+   "speedKph": 303.7,
+   "throttlePct": 0.0,
+   "timeS": 45.737
+  },
+  {
+   "brakePct": 8.5,
+   "distanceM": 2680.0,
+   "gear": 8,
+   "speedKph": 302.2,
+   "throttlePct": 0.0,
+   "timeS": 45.974
+  },
+  {
+   "brakePct": 14.6,
+   "distanceM": 2700.0,
+   "gear": 8,
+   "speedKph": 299.3,
+   "throttlePct": 0.0,
+   "timeS": 46.214
+  },
+  {
+   "brakePct": 23.4,
+   "distanceM": 2720.0,
+   "gear": 8,
+   "speedKph": 294.4,
+   "throttlePct": 0.0,
+   "timeS": 46.456
+  },
+  {
+   "brakePct": 34.5,
+   "distanceM": 2740.0,
+   "gear": 8,
+   "speedKph": 286.3,
+   "throttlePct": 0.0,
+   "timeS": 46.704
+  },
+  {
+   "brakePct": 46.8,
+   "distanceM": 2760.0,
+   "gear": 7,
+   "speedKph": 274.4,
+   "throttlePct": 0.0,
+   "timeS": 46.96
+  },
+  {
+   "brakePct": 58.0,
+   "distanceM": 2780.0,
+   "gear": 7,
+   "speedKph": 257.9,
+   "throttlePct": 0.0,
+   "timeS": 47.231
+  },
+  {
+   "brakePct": 64.9,
+   "distanceM": 2800.0,
+   "gear": 6,
+   "speedKph": 237.2,
+   "throttlePct": 0.0,
+   "timeS": 47.521
+  },
+  {
+   "brakePct": 64.6,
+   "distanceM": 2820.0,
+   "gear": 6,
+   "speedKph": 213.8,
+   "throttlePct": 0.0,
+   "timeS": 47.841
+  },
+  {
+   "brakePct": 54.9,
+   "distanceM": 2840.0,
+   "gear": 5,
+   "speedKph": 190.0,
+   "throttlePct": 0.0,
+   "timeS": 48.198
+  },
+  {
+   "brakePct": 35.9,
+   "distanceM": 2860.0,
+   "gear": 5,
+   "speedKph": 169.3,
+   "throttlePct": 0.0,
+   "timeS": 48.6
+  },
+  {
+   "brakePct": 10.4,
+   "distanceM": 2880.0,
+   "gear": 4,
+   "speedKph": 155.2,
+   "throttlePct": 0.0,
+   "timeS": 49.046
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2900.0,
+   "gear": 4,
+   "speedKph": 150.1,
+   "throttlePct": 100.0,
+   "timeS": 49.52
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2920.0,
+   "gear": 4,
+   "speedKph": 155.2,
+   "throttlePct": 100.0,
+   "timeS": 49.994
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2940.0,
+   "gear": 5,
+   "speedKph": 169.3,
+   "throttlePct": 100.0,
+   "timeS": 50.44
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2960.0,
+   "gear": 5,
+   "speedKph": 190.0,
+   "throttlePct": 100.0,
+   "timeS": 50.842
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 2980.0,
+   "gear": 6,
+   "speedKph": 213.8,
+   "throttlePct": 100.0,
+   "timeS": 51.199
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3000.0,
+   "gear": 6,
+   "speedKph": 237.2,
+   "throttlePct": 100.0,
+   "timeS": 51.519
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3020.0,
+   "gear": 7,
+   "speedKph": 257.9,
+   "throttlePct": 100.0,
+   "timeS": 51.809
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3040.0,
+   "gear": 7,
+   "speedKph": 274.4,
+   "throttlePct": 100.0,
+   "timeS": 52.08
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3060.0,
+   "gear": 8,
+   "speedKph": 286.3,
+   "throttlePct": 100.0,
+   "timeS": 52.336
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3080.0,
+   "gear": 8,
+   "speedKph": 294.4,
+   "throttlePct": 100.0,
+   "timeS": 52.584
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3100.0,
+   "gear": 8,
+   "speedKph": 299.3,
+   "throttlePct": 100.0,
+   "timeS": 52.826
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3120.0,
+   "gear": 8,
+   "speedKph": 302.2,
+   "throttlePct": 100.0,
+   "timeS": 53.066
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3140.0,
+   "gear": 8,
+   "speedKph": 303.7,
+   "throttlePct": 100.0,
+   "timeS": 53.303
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3160.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 53.54
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3180.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 53.776
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3200.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 54.012
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3220.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 54.248
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3240.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 54.484
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3260.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 54.72
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3280.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 54.956
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3300.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 55.192
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3320.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 55.428
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3340.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 55.664
+  },
+  {
+   "brakePct": 5.9,
+   "distanceM": 3360.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 0.0,
+   "timeS": 55.9
+  },
+  {
+   "brakePct": 5.0,
+   "distanceM": 3380.0,
+   "gear": 8,
+   "speedKph": 302.7,
+   "throttlePct": 0.0,
+   "timeS": 56.137
+  },
+  {
+   "brakePct": 7.9,
+   "distanceM": 3400.0,
+   "gear": 8,
+   "speedKph": 301.0,
+   "throttlePct": 0.0,
+   "timeS": 56.375
+  },
+  {
+   "brakePct": 12.0,
+   "distanceM": 3420.0,
+   "gear": 8,
+   "speedKph": 298.3,
+   "throttlePct": 0.0,
+   "timeS": 56.616
+  },
+  {
+   "brakePct": 17.6,
+   "distanceM": 3440.0,
+   "gear": 8,
+   "speedKph": 294.1,
+   "throttlePct": 0.0,
+   "timeS": 56.859
+  },
+  {
+   "brakePct": 24.6,
+   "distanceM": 3460.0,
+   "gear": 8,
+   "speedKph": 288.0,
+   "throttlePct": 0.0,
+   "timeS": 57.106
+  },
+  {
+   "brakePct": 33.0,
+   "distanceM": 3480.0,
+   "gear": 7,
+   "speedKph": 279.4,
+   "throttlePct": 0.0,
+   "timeS": 57.36
+  },
+  {
+   "brakePct": 42.3,
+   "distanceM": 3500.0,
+   "gear": 7,
+   "speedKph": 267.8,
+   "throttlePct": 0.0,
+   "timeS": 57.622
+  },
+  {
+   "brakePct": 51.7,
+   "distanceM": 3520.0,
+   "gear": 7,
+   "speedKph": 252.9,
+   "throttlePct": 0.0,
+   "timeS": 57.899
+  },
+  {
+   "brakePct": 60.2,
+   "distanceM": 3540.0,
+   "gear": 6,
+   "speedKph": 234.5,
+   "throttlePct": 0.0,
+   "timeS": 58.194
+  },
+  {
+   "brakePct": 66.3,
+   "distanceM": 3560.0,
+   "gear": 6,
+   "speedKph": 213.0,
+   "throttlePct": 0.0,
+   "timeS": 58.516
+  },
+  {
+   "brakePct": 68.8,
+   "distanceM": 3580.0,
+   "gear": 5,
+   "speedKph": 189.0,
+   "throttlePct": 0.0,
+   "timeS": 58.874
+  },
+  {
+   "brakePct": 66.6,
+   "distanceM": 3600.0,
+   "gear": 5,
+   "speedKph": 164.0,
+   "throttlePct": 0.0,
+   "timeS": 59.283
+  },
+  {
+   "brakePct": 58.9,
+   "distanceM": 3620.0,
+   "gear": 4,
+   "speedKph": 139.5,
+   "throttlePct": 0.0,
+   "timeS": 59.758
+  },
+  {
+   "brakePct": 45.9,
+   "distanceM": 3640.0,
+   "gear": 3,
+   "speedKph": 117.6,
+   "throttlePct": 0.0,
+   "timeS": 60.321
+  },
+  {
+   "brakePct": 28.4,
+   "distanceM": 3660.0,
+   "gear": 3,
+   "speedKph": 100.2,
+   "throttlePct": 0.0,
+   "timeS": 60.987
+  },
+  {
+   "brakePct": 8.0,
+   "distanceM": 3680.0,
+   "gear": 3,
+   "speedKph": 89.0,
+   "throttlePct": 0.0,
+   "timeS": 61.753
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3700.0,
+   "gear": 3,
+   "speedKph": 85.1,
+   "throttlePct": 90.3,
+   "timeS": 62.587
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3720.0,
+   "gear": 3,
+   "speedKph": 89.0,
+   "throttlePct": 100.0,
+   "timeS": 63.421
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3740.0,
+   "gear": 3,
+   "speedKph": 100.2,
+   "throttlePct": 100.0,
+   "timeS": 64.188
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3760.0,
+   "gear": 3,
+   "speedKph": 117.6,
+   "throttlePct": 100.0,
+   "timeS": 64.853
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3780.0,
+   "gear": 4,
+   "speedKph": 139.5,
+   "throttlePct": 100.0,
+   "timeS": 65.416
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3800.0,
+   "gear": 5,
+   "speedKph": 164.0,
+   "throttlePct": 100.0,
+   "timeS": 65.892
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3820.0,
+   "gear": 5,
+   "speedKph": 189.0,
+   "throttlePct": 100.0,
+   "timeS": 66.3
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3840.0,
+   "gear": 6,
+   "speedKph": 213.0,
+   "throttlePct": 100.0,
+   "timeS": 66.658
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3860.0,
+   "gear": 6,
+   "speedKph": 234.5,
+   "throttlePct": 100.0,
+   "timeS": 66.98
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3880.0,
+   "gear": 7,
+   "speedKph": 252.9,
+   "throttlePct": 100.0,
+   "timeS": 67.275
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3900.0,
+   "gear": 7,
+   "speedKph": 267.8,
+   "throttlePct": 100.0,
+   "timeS": 67.552
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3920.0,
+   "gear": 7,
+   "speedKph": 279.4,
+   "throttlePct": 100.0,
+   "timeS": 67.815
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3940.0,
+   "gear": 8,
+   "speedKph": 288.0,
+   "throttlePct": 100.0,
+   "timeS": 68.068
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3960.0,
+   "gear": 8,
+   "speedKph": 294.1,
+   "throttlePct": 100.0,
+   "timeS": 68.315
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 3980.0,
+   "gear": 8,
+   "speedKph": 298.3,
+   "throttlePct": 100.0,
+   "timeS": 68.558
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4000.0,
+   "gear": 8,
+   "speedKph": 301.0,
+   "throttlePct": 100.0,
+   "timeS": 68.799
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4020.0,
+   "gear": 8,
+   "speedKph": 302.7,
+   "throttlePct": 100.0,
+   "timeS": 69.037
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4040.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 69.274
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4060.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 69.51
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4080.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 69.746
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4100.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 69.982
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4120.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 70.218
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4140.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 70.454
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4160.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 70.69
+  },
+  {
+   "brakePct": 6.6,
+   "distanceM": 4180.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 0.0,
+   "timeS": 70.926
+  },
+  {
+   "brakePct": 7.2,
+   "distanceM": 4200.0,
+   "gear": 8,
+   "speedKph": 302.5,
+   "throttlePct": 0.0,
+   "timeS": 71.164
+  },
+  {
+   "brakePct": 12.3,
+   "distanceM": 4220.0,
+   "gear": 8,
+   "speedKph": 300.1,
+   "throttlePct": 0.0,
+   "timeS": 71.402
+  },
+  {
+   "brakePct": 19.8,
+   "distanceM": 4240.0,
+   "gear": 8,
+   "speedKph": 295.9,
+   "throttlePct": 0.0,
+   "timeS": 71.644
+  },
+  {
+   "brakePct": 29.8,
+   "distanceM": 4260.0,
+   "gear": 8,
+   "speedKph": 289.1,
+   "throttlePct": 0.0,
+   "timeS": 71.89
+  },
+  {
+   "brakePct": 41.9,
+   "distanceM": 4280.0,
+   "gear": 7,
+   "speedKph": 278.8,
+   "throttlePct": 0.0,
+   "timeS": 72.143
+  },
+  {
+   "brakePct": 55.0,
+   "distanceM": 4300.0,
+   "gear": 7,
+   "speedKph": 264.1,
+   "throttlePct": 0.0,
+   "timeS": 72.408
+  },
+  {
+   "brakePct": 66.8,
+   "distanceM": 4320.0,
+   "gear": 7,
+   "speedKph": 244.7,
+   "throttlePct": 0.0,
+   "timeS": 72.691
+  },
+  {
+   "brakePct": 74.6,
+   "distanceM": 4340.0,
+   "gear": 6,
+   "speedKph": 220.9,
+   "throttlePct": 0.0,
+   "timeS": 73.0
+  },
+  {
+   "brakePct": 75.4,
+   "distanceM": 4360.0,
+   "gear": 5,
+   "speedKph": 194.0,
+   "throttlePct": 0.0,
+   "timeS": 73.347
+  },
+  {
+   "brakePct": 67.4,
+   "distanceM": 4380.0,
+   "gear": 5,
+   "speedKph": 166.3,
+   "throttlePct": 0.0,
+   "timeS": 73.748
+  },
+  {
+   "brakePct": 50.1,
+   "distanceM": 4400.0,
+   "gear": 4,
+   "speedKph": 141.2,
+   "throttlePct": 0.0,
+   "timeS": 74.218
+  },
+  {
+   "brakePct": 25.2,
+   "distanceM": 4420.0,
+   "gear": 4,
+   "speedKph": 121.9,
+   "throttlePct": 0.0,
+   "timeS": 74.769
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4440.0,
+   "gear": 3,
+   "speedKph": 111.5,
+   "throttlePct": 76.3,
+   "timeS": 75.391
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4460.0,
+   "gear": 3,
+   "speedKph": 111.5,
+   "throttlePct": 100.0,
+   "timeS": 76.042
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4480.0,
+   "gear": 4,
+   "speedKph": 121.9,
+   "throttlePct": 100.0,
+   "timeS": 76.664
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4500.0,
+   "gear": 4,
+   "speedKph": 141.2,
+   "throttlePct": 100.0,
+   "timeS": 77.215
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4520.0,
+   "gear": 5,
+   "speedKph": 166.3,
+   "throttlePct": 100.0,
+   "timeS": 77.685
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4540.0,
+   "gear": 5,
+   "speedKph": 194.0,
+   "throttlePct": 100.0,
+   "timeS": 78.086
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4560.0,
+   "gear": 6,
+   "speedKph": 220.9,
+   "throttlePct": 100.0,
+   "timeS": 78.433
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4580.0,
+   "gear": 7,
+   "speedKph": 244.7,
+   "throttlePct": 100.0,
+   "timeS": 78.743
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4600.0,
+   "gear": 7,
+   "speedKph": 264.1,
+   "throttlePct": 100.0,
+   "timeS": 79.025
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4620.0,
+   "gear": 7,
+   "speedKph": 278.8,
+   "throttlePct": 100.0,
+   "timeS": 79.29
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4640.0,
+   "gear": 8,
+   "speedKph": 289.1,
+   "throttlePct": 100.0,
+   "timeS": 79.543
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4660.0,
+   "gear": 8,
+   "speedKph": 295.9,
+   "throttlePct": 100.0,
+   "timeS": 79.789
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4680.0,
+   "gear": 8,
+   "speedKph": 300.1,
+   "throttlePct": 100.0,
+   "timeS": 80.031
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4700.0,
+   "gear": 8,
+   "speedKph": 302.5,
+   "throttlePct": 100.0,
+   "timeS": 80.27
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4720.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 80.507
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4740.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 80.743
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4760.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 80.979
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4780.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 81.215
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4800.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 81.451
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4820.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 81.687
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4840.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 81.923
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4860.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 82.159
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4880.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 82.395
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4900.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 82.631
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4920.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 82.868
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4940.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 83.104
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4960.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 83.34
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 4980.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 83.576
+  },
+  {
+   "brakePct": 0.0,
+   "distanceM": 5000.0,
+   "gear": 8,
+   "speedKph": 305.0,
+   "throttlePct": 95.0,
+   "timeS": 83.812
+  }
+ ],
+ "schemaVersion": 1,
+ "session": {
+  "eventKey": "demo-grand-prix",
+  "season": 2099,
+  "sessionKey": "demo-qualifying"
+ },
+ "source": {
+  "name": "demo-fixture",
+  "notes": "Synthetic demo data. Invented values; not a real F1 lap.",
+  "retrievedAt": "2099-01-01T00:00:00Z",
+  "rightsStatus": "synthetic-demo"
+ },
+ "units": {
+  "brake": "percent",
+  "distance": "m",
+  "speed": "km/h",
+  "throttle": "percent",
+  "time": "seconds-from-lap-start"
+ }
+}

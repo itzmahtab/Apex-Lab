@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+.env.local
+*.tsbuildinfo
+__pycache__
+.pytest_cache
+.venv
+data/artifacts
+data/cache
+.open-next
+.wrangler

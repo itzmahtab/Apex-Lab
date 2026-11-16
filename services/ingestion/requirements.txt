@@ -1,0 +1,6 @@
+# Core ingestion (demo fixtures) has no third-party dependencies beyond pytest for tests.
+pytest>=8
+# Optional, only for the FastF1 adapter (see docs/data-rights.md before use):
+# fastf1>=3.4
+# pandas
+# numpy
