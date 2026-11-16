@@ -1,21 +1,28 @@
-# Data rights checklist (Phase 1 gate)
+# Data rights
 
-**Status: real data NOT cleared. The app ships synthetic demo data only.**
+**Status:** ApexLab shows real timing and telemetry from **OpenF1** as a **non-commercial, unofficial fan project**. Commercial use (ads, paid features, sponsorship) stays **blocked** until the checklist below is done.
 
-## Policy
-- Demo fixtures are synthetic: fictional circuit, season 2099, fictional drivers (`Demo Driver A/B`). Source `demo-fixture`, `rightsStatus: synthetic-demo`. The UI shows a "Demo data" notice wherever they appear.
-- Never present invented values as real results. Never add real driver names/laps to fixtures.
-- FastF1 is a library; its licence does not grant rights to the data it fetches. The adapter is disabled unless `APEXLAB_ENABLE_FASTF1=1`.
-- No official F1 logos, photos, broadcast material or imitation typography. Site and share cards state they are unofficial.
+## Sources
 
-## Before enabling real data publicly / commercially
-- [ ] Review the terms of the underlying timing/telemetry source and rights-holder guidelines.
-- [ ] Record per dataset: source, retrieval timestamp, licence/permission, attribution, permitted use (artifact `source` block).
-- [ ] Decide whether derived artifacts may be redistributed.
-- [ ] Publish real Privacy and Terms pages.
-- [ ] Do not enable ads until the above and policy review are done.
+| Source | What | Used for | Notes |
+|---|---|---|---|
+| [OpenF1](https://openf1.org) | Sessions, drivers, laps, stints, car data, positions (2023+) | Everything on the live site | Free, open-source, unofficial. Republishes F1 live-timing data. Attributed in the footer, methodology page, every comparison and every share card. |
+| Synthetic demo fixtures | Fictional circuit, season 2099, fictional drivers | Offline mode and tests | Invented values, always labelled "Demo data". |
+| FastF1 | — | Not used | The F1 live-timing endpoint it reads returned 401 from the build environment; the adapter is a gated stub (`APEXLAB_ENABLE_FASTF1=1`). |
 
-## Open questions
-1. Which source/licence will back a public beta?
-2. May derived telemetry artifacts be cached in public object storage?
-3. Attribution wording required by the source?
+## What the project does and doesn't do
+
+- **Does:** read data on demand, cache it (30 days for completed sessions), and show derived analysis with attribution.
+- **Does not:** use official F1 logos, team logos, driver photos (OpenF1 headshot URLs are deliberately ignored), broadcast footage, or imitation F1 typography.
+- **Does not:** commit real F1 data to the repository. Python tests use OpenF1-shaped synthetic payloads, and real snapshots go to the git-ignored `data/artifacts/`.
+- **Does not:** imply affiliation. The disclaimer is on every page and every share card.
+
+A disclaimer is not permission. Formula 1 timing data belongs to its rights holders. An open-source library or community API does not grant rights to the underlying data.
+
+## Before any commercial use
+
+- [ ] Review Formula One Management's terms for timing data and seek permission where needed.
+- [ ] Review OpenF1's current terms and its paid tier, if any, for commercial use.
+- [ ] Decide whether cached derived data may be stored and served at scale.
+- [ ] Have the privacy and terms pages reviewed.
+- [ ] Only then consider ads, sponsorship or paid features.

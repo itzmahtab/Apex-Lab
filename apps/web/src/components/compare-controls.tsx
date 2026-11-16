@@ -1,110 +1,144 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import type { Catalog } from "@apexlab/contracts";
+import { useEffect, useState, useTransition } from "react";
+import type { Driver, EventSummary, LapSummary, SessionSummary } from "@apexlab/contracts";
 import { formatLapTime } from "@apexlab/analytics";
-import { Card } from "@/components/ui/card";
+import { pairColours } from "@/lib/colors";
+import { LineKey } from "@/components/driver";
 
-export interface Selection { session?: string; a?: string; la?: number; b?: string; lb?: number }
-
-const sel = "w-full min-h-10 rounded-lg border border-border bg-elevated px-3 text-sm text-fg";
-
-function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
-  return <div><label htmlFor={id} className="block text-xs text-muted mb-1">{label}</label>{children}</div>;
+export interface ControlsInitial {
+  years: number[];
+  year: number;
+  events: EventSummary[];
+  eventKey: string | null;
+  sessions: SessionSummary[];
+  sessionKey: string | null;
+  drivers: Driver[];
+  laps: LapSummary[];
+  selection: { a?: string; la?: number; b?: string; lb?: number };
 }
 
-export function CompareControls({ catalog, value }: { catalog: Catalog; value: Selection }) {
+const sel = "w-full min-h-11 rounded-xl border border-border bg-elevated px-3 text-sm text-fg transition-colors hover:border-border-strong disabled:opacity-50";
+
+function Field({ id, label, children, extra }: { id: string; label: string; children: React.ReactNode; extra?: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <label htmlFor={id} className="mb-1.5 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted">{label}{extra}</label>
+      {children}
+    </div>
+  );
+}
+
+export function CompareControls({ initial }: { initial: ControlsInitial }) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const session = catalog.sessions.find((s) => s.key === value.session) ?? null;
-  const event = catalog.events.find((e) => e.key === session?.eventKey) ?? null;
-  const season = catalog.seasons.find((s) => event && s.eventKeys.includes(event.key)) ?? null;
+  const [year, setYear] = useState(initial.year);
+  const [events, setEvents] = useState(initial.events);
+  const [eventKey, setEventKey] = useState(initial.eventKey);
+  const [sessions, setSessions] = useState(initial.sessions);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { a, la, b, lb } = initial.selection;
 
-  const go = (next: Selection) => {
+  useEffect(() => { setYear(initial.year); setEvents(initial.events); setEventKey(initial.eventKey); setSessions(initial.sessions); }, [initial]);
+
+  const go = (q: Record<string, string | number | undefined>) => {
     const p = new URLSearchParams();
-    if (next.session) p.set("session", next.session);
-    if (next.a) p.set("a", next.a);
-    if (next.la) p.set("la", String(next.la));
-    if (next.b) p.set("b", next.b);
-    if (next.lb) p.set("lb", String(next.lb));
+    for (const [k, v] of Object.entries(q)) if (v !== undefined && v !== "") p.set(k, String(v));
     start(() => router.push(`/compare?${p.toString()}`, { scroll: false }));
   };
-  /** Best valid lap with telemetry (falls back to any lap with telemetry). */
-  const defaultLap = (s: typeof session | undefined, drv: string) => {
-    const laps = s?.laps.filter((l) => l.driverKey === drv && l.hasTelemetry) ?? [];
-    const valid = laps.filter((l) => l.isValid !== false && l.lapTimeMs != null).sort((x, y) => x.lapTimeMs! - y.lapTimeMs!);
-    return (valid[0] ?? laps[0])?.lapNumber;
-  };
-  const pickSession = (key: string) => {
-    const s = catalog.sessions.find((x) => x.key === key);
-    const [d1, d2] = s?.drivers ?? [];
-    go({ session: key, a: d1?.key, la: d1 && defaultLap(s, d1.key), b: d2?.key, lb: d2 && defaultLap(s, d2.key) });
-  };
-  const eventsOfSeason = season ? catalog.events.filter((e) => season.eventKeys.includes(e.key)) : [];
 
-  const driverBlock = (side: "a" | "b") => {
-    const drvKey = value[side];
-    const lapKey = side === "a" ? value.la : value.lb;
-    const other = side === "a" ? value.b : value.a;
-    const laps = session?.laps.filter((l) => l.driverKey === drvKey) ?? [];
+  async function load<T>(url: string, what: string): Promise<T | null> {
+    setLoading(what); setError(null);
+    try {
+      const r = await fetch(url);
+      const j = await r.json();
+      if (!r.ok) throw new Error(j?.error?.message ?? "Request failed");
+      return j as T;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load data");
+      return null;
+    } finally { setLoading(null); }
+  }
+
+  async function pickYear(y: number) {
+    setYear(y); setEventKey(null); setSessions([]);
+    const j = await load<{ events: EventSummary[] }>(`/api/events?season=${y}`, "events");
+    if (j) setEvents(j.events);
+  }
+  async function pickEvent(k: string) {
+    setEventKey(k); setSessions([]);
+    const j = await load<{ sessions: SessionSummary[] }>(`/api/sessions?eventId=${encodeURIComponent(k)}`, "sessions");
+    if (j) setSessions(j.sessions);
+  }
+
+  const lapsOf = (k?: string) => initial.laps.filter((l) => l.driverKey === k).sort((x, y) => x.lapNumber - y.lapNumber);
+  const fastestOf = (k?: string) => lapsOf(k).filter((l) => l.lapTimeMs && l.hasTelemetry && !l.isPitOutLap).sort((x, y) => x.lapTimeMs! - y.lapTimeMs!)[0]?.lapNumber;
+  const dA = initial.drivers.find((d) => d.key === a), dB = initial.drivers.find((d) => d.key === b);
+  const colours = pairColours(dA?.teamColour, dB?.teamColour);
+  const session = initial.sessionKey;
+
+  const driverField = (side: "a" | "b") => {
+    const key = side === "a" ? a : b, lap = side === "a" ? la : lb, other = side === "a" ? b : a;
+    const fastest = fastestOf(key);
     return (
-      <>
-        <Field id={`driver-${side}`} label={side === "a" ? "Driver A" : "Driver B"}>
-          <select id={`driver-${side}`} className={sel} disabled={!session} value={drvKey ?? ""}
-            onChange={(e) => go({ ...value, [side]: e.target.value, [side === "a" ? "la" : "lb"]: defaultLap(session, e.target.value) })}>
-            <option value="" disabled>Choose driver…</option>
-            {session?.drivers.map((d) => <option key={d.key} value={d.key} disabled={d.key === other}>{d.displayName} ({d.abbreviation})</option>)}
+      <div className="grid grid-cols-[1.4fr_1fr] gap-2">
+        <Field id={`driver-${side}`} label={`Driver ${side.toUpperCase()}`} extra={key ? <LineKey colour={side === "a" ? colours.a : colours.b} dashed={side === "b"} /> : null}>
+          <select id={`driver-${side}`} className={sel} disabled={!session || pending} value={key ?? ""}
+            onChange={(e) => go({ session: session!, a: side === "a" ? e.target.value : a, la: side === "a" ? undefined : la, b: side === "b" ? e.target.value : b, lb: side === "b" ? undefined : lb })}>
+            <option value="" disabled>Choose…</option>
+            {initial.drivers.map((d) => <option key={d.key} value={d.key} disabled={d.key === other}>{d.abbreviation} · {d.displayName}{d.teamName ? ` (${d.teamName})` : ""}</option>)}
           </select>
         </Field>
-        <Field id={`lap-${side}`} label={`Lap (${side.toUpperCase()})`}>
-          <select id={`lap-${side}`} className={sel} disabled={!drvKey} value={lapKey ?? ""}
-            onChange={(e) => go({ ...value, [side === "a" ? "la" : "lb"]: Number(e.target.value) })}>
-            <option value="" disabled>Choose lap…</option>
-            {laps.map((l) => (
-              <option key={l.lapNumber} value={l.lapNumber}>
-                Lap {l.lapNumber} · {formatLapTime(l.lapTimeMs)}{l.isValid === false ? " · invalid" : ""}{l.hasTelemetry ? " · telemetry" : " · times only"}
+        <Field id={`lap-${side}`} label="Lap">
+          <select id={`lap-${side}`} className={sel} disabled={!key || pending} value={lap ?? ""}
+            onChange={(e) => go({ session: session!, a, b, la: side === "a" ? Number(e.target.value) : la, lb: side === "b" ? Number(e.target.value) : lb })}>
+            <option value="" disabled>Lap…</option>
+            {lapsOf(key).map((l) => (
+              <option key={l.lapNumber} value={l.lapNumber} disabled={!l.lapTimeMs}>
+                {l.lapNumber === fastest ? "★ " : ""}L{l.lapNumber} · {formatLapTime(l.lapTimeMs)}{l.isPitOutLap ? " · out" : ""}{l.compound ? ` · ${l.compound[0]}` : ""}{!l.hasTelemetry ? " · no telemetry" : ""}
               </option>
             ))}
           </select>
         </Field>
-      </>
+      </div>
     );
   };
 
   return (
-    <Card aria-label="Comparison selectors" aria-busy={pending}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <section aria-label="Choose a comparison" aria-busy={pending || !!loading}
+      className="rounded-2xl border border-border bg-surface/80 p-4 sm:p-5">
+      <div className="grid gap-3 md:grid-cols-[0.6fr_1.6fr_1fr]">
         <Field id="season" label="Season">
-          <select id="season" className={sel} value={season?.year ?? ""} onChange={(e) => {
-            const s = catalog.seasons.find((x) => x.year === Number(e.target.value));
-            const ev = catalog.events.find((x) => x.key === s?.eventKeys[0]);
-            if (ev?.sessionKeys[0]) pickSession(ev.sessionKeys[0]);
-          }}>
-            <option value="" disabled>Choose season…</option>
-            {catalog.seasons.map((s) => <option key={s.year} value={s.year}>{s.year}</option>)}
+          <select id="season" className={sel} value={year} onChange={(e) => pickYear(Number(e.target.value))}>
+            {initial.years.map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </Field>
-        <Field id="event" label="Event">
-          <select id="event" className={sel} disabled={!season} value={event?.key ?? ""} onChange={(e) => {
-            const k = catalog.events.find((x) => x.key === e.target.value)?.sessionKeys[0];
-            if (k) pickSession(k);
-          }}>
-            <option value="" disabled>Choose event…</option>
-            {eventsOfSeason.map((e) => <option key={e.key} value={e.key}>{e.name}</option>)}
+        <Field id="event" label="Grand Prix">
+          <select id="event" className={sel} value={eventKey ?? ""} disabled={loading === "events"} onChange={(e) => pickEvent(e.target.value)}>
+            <option value="" disabled>{loading === "events" ? "Loading…" : "Choose event…"}</option>
+            {events.map((e) => <option key={e.key} value={e.key}>{e.name}{e.location ? ` · ${e.location}` : ""}</option>)}
           </select>
         </Field>
         <Field id="session" label="Session">
-          <select id="session" className={sel} disabled={!event} value={session?.key ?? ""} onChange={(e) => pickSession(e.target.value)}>
-            <option value="" disabled>Choose session…</option>
-            {catalog.sessions.filter((s) => s.eventKey === event?.key).map((s) => <option key={s.key} value={s.key}>{s.name}</option>)}
+          <select id="session" className={sel} value={session && sessions.some((s) => s.key === session) ? session : ""} disabled={!eventKey || loading === "sessions"}
+            onChange={(e) => go({ session: e.target.value })}>
+            <option value="" disabled>{loading === "sessions" ? "Loading…" : "Choose session…"}</option>
+            {sessions.map((s) => <option key={s.key} value={s.key} disabled={s.status !== "completed"}>{s.name}{s.status !== "completed" ? ` (${s.status})` : ""}</option>)}
           </select>
         </Field>
       </div>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <div className="grid gap-3">{driverBlock("a")}</div>
-        <div className="grid gap-3">{driverBlock("b")}</div>
+      <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_auto_1fr] lg:items-end">
+        {driverField("a")}
+        <button type="button" disabled={!a || !b || pending} onClick={() => go({ session: session!, a: b, la: lb, b: a, lb: la })}
+          className="min-h-11 rounded-xl border border-border bg-elevated px-3 text-sm text-muted transition-colors hover:border-border-strong hover:text-fg disabled:opacity-40" aria-label="Swap driver A and driver B">
+          ⇄ Swap
+        </button>
+        {driverField("b")}
       </div>
-      <p className="mt-3 text-xs text-muted" role="status">{pending ? "Loading comparison…" : "Selections are saved in the page URL so you can share them."}</p>
-    </Card>
+      <p className="mt-3 min-h-5 text-xs text-subtle" role="status">
+        {error ? <span className="text-accent">{error}</span> : pending ? "Loading comparison…" : loading ? `Loading ${loading}…` : "★ marks each driver's fastest lap. Your selection lives in the URL, so the page link is the share link."}
+      </p>
+    </section>
   );
 }

@@ -3,7 +3,7 @@ import type { ApiError, ErrorCode } from "@apexlab/contracts";
 
 const STATUS: Record<ErrorCode, number> = {
   VALIDATION_ERROR: 400, NOT_FOUND: 404, TELEMETRY_UNAVAILABLE: 404,
-  UNSUPPORTED_ARTIFACT_VERSION: 422, INTERNAL_ERROR: 500,
+  UNSUPPORTED_ARTIFACT_VERSION: 422, UPSTREAM_UNAVAILABLE: 503, INTERNAL_ERROR: 500,
 };
 
 export class AppError extends Error {

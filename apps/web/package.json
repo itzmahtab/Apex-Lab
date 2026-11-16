@@ -15,10 +15,11 @@
   "dependencies": {
     "@apexlab/analytics": "workspace:*",
     "@apexlab/contracts": "workspace:*",
-    "@apexlab/db": "workspace:*",
+    "@apexlab/openf1": "workspace:*",
     "@opennextjs/cloudflare": "1.20.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "geist": "^1.9.2",
     "motion": "^14.14.0",
     "next": "^16.4.6",
     "react": "^19.3.1",

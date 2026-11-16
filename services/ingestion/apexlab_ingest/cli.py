@@ -53,6 +53,25 @@ def cmd_validate(root: Path) -> int:
     return 1 if bad else 0
 
 
+def cmd_openf1(args: argparse.Namespace) -> int:
+    from .openf1_source import SourceError, build_artifact
+
+    t0 = time.monotonic()
+    try:
+        art = build_artifact(args.session, args.driver, args.lap)
+        missing = validate_artifact(art)
+    except (SourceError, ArtifactError) as e:
+        log.error("source=openf1 session=%s driver=%s lap=%s error_category=%s", args.session, args.driver, args.lap, e.code)
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+    path = artifact_path(args.out, art)
+    changed = write_json_atomic(path, art)
+    log.info("source=openf1 session=%s version=%s samples=%d missing=%s changed=%s duration=%.2fs",
+             args.session, PROCESSING_VERSION, len(art["samples"]), missing, changed, time.monotonic() - t0)
+    print(f"{'wrote' if changed else 'unchanged'} {path}")
+    return 0
+
+
 def cmd_fastf1(args: argparse.Namespace) -> int:
     from .fastf1_source import FastF1Disabled, load_session
 
@@ -73,6 +92,11 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--out", type=Path, default=Path("../../data/fixtures/demo"))
     v = sub.add_parser("validate", help="validate artifacts under a data root")
     v.add_argument("--root", type=Path, default=Path("../../data/fixtures/demo"))
+    o = sub.add_parser("openf1", help="snapshot one lap from OpenF1 into a validated artifact")
+    o.add_argument("--session", type=int, required=True, help="OpenF1 session_key, e.g. 9519")
+    o.add_argument("--driver", type=int, required=True, help="car number, e.g. 16")
+    o.add_argument("--lap", type=int, required=True)
+    o.add_argument("--out", type=Path, default=Path("../../data/artifacts"))
     f = sub.add_parser("fastf1", help="(gated) ingest a FastF1 session")
     f.add_argument("--year", type=int, required=True)
     f.add_argument("--event", required=True)
@@ -83,6 +107,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_demo(a.out)
     if a.cmd == "validate":
         return cmd_validate(a.root)
+    if a.cmd == "openf1":
+        return cmd_openf1(a)
     return cmd_fastf1(a)
 
 

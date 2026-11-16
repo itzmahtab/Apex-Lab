@@ -49,6 +49,7 @@ def validate_artifact(art: dict[str, Any]) -> list[str]:
         _range("speedKph", s.get("speedKph"), 0)
         _range("throttlePct", s.get("throttlePct"), 0, 100)
         _range("brakePct", s.get("brakePct"), 0, 100)
+        _range("rpm", s.get("rpm"), 0)
     missing = []
     for label, key in (("speed", "speedKph"), ("throttle", "throttlePct"), ("brake", "brakePct"), ("time", "timeS")):
         if all(s.get(key) is None for s in samples):
