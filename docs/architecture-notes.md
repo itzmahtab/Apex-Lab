@@ -1,22 +1,42 @@
 # Implementation notes
 
-- `packages/contracts` – Zod schemas (artifact, catalog, query, comparison result, errors). Single source of truth for TS.
-- `packages/analytics` – pure calculation engine (deltas, distance alignment, summary). Vitest.
-- `packages/db` – Drizzle schema, generated SQL migration (`migrations/`), idempotent seed from fixtures.
-- `services/ingestion` – stdlib-only Python: demo source, validation, atomic writes, gated FastF1 stub, pytest.
-- `apps/web` – Next.js 16 App Router. `server/repository.ts` is the data boundary (fixture or Postgres metadata; telemetry always from artifact files).
+## Packages
 
-Decisions
-- Pairwise comparison runs in TypeScript at request time (cheap, no pandas in the web runtime). Python owns ingestion/normalisation/validation; its `calc.py` mirrors the TS sign conventions and is covered by tests. Revisit duplication when real ingestion lands.
-- Share links are URL-based (`/compare?session=&a=&la=&b=&lb=`), so no database is required. No `comparisons` rows are written yet (table exists for later).
-- Brake is a percent signal in the demo data; the artifact `units.brake` field carries the kind.
-- Dark theme only for now.
-- Build emits a Turbopack warning about dynamic filesystem tracing in `repository.ts`; revisit in Phase 12 deployment work.
+| Path | Role |
+|---|---|
+| `apps/web` | Next.js 16 App Router. Pages, route handlers, server-rendered SVG track map, Recharts telemetry. |
+| `packages/contracts` | Zod schemas for every boundary: artifacts, session detail, queries, comparison result, error codes. |
+| `packages/analytics` | Pure engine: lap normalisation (distance from speed), length-normalised alignment, deltas, mini-sectors, track map, summary text. |
+| `packages/openf1` | Typed OpenF1 client (Zod-validated, rate-aware queue, retry/backoff, in-flight de-dup, pluggable cache) and the adapter to the contracts. |
+| `packages/db` | Drizzle schema, SQL migration and idempotent seed. Kept for ingestion-side storage and saved comparisons; **not used by the deployed Worker**. |
+| `services/ingestion` | Python CLI: synthetic demo fixtures, OpenF1 lap snapshots, artifact validation, atomic idempotent writes. |
 
-API: `GET /api/seasons`, `/api/events?season=`, `/api/sessions?eventId=`, `/api/sessions/:key/drivers`, `/api/comparisons/data?session&a&la&b&lb`, `/api/share-card?...[&download=1]`. Errors: `{error:{code,message}}`.
+## Request flow
 
-## Cloudflare deployment (Workers via OpenNext)
-- `apps/web`: `pnpm cf:deploy` (build with `@opennextjs/cloudflare`, embed static assets, `wrangler deploy`). Needs `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID`.
-- Fixture mode only on Workers: demo data is bundled via `scripts/bundle-fixtures.mjs` -> `src/server/fixtures.bundle.json` (re-run after `pnpm fixtures`).
-- Static assets are embedded in the Worker (`worker-entry.ts`, `scripts/embed-assets.mjs`) because the Workers Assets upload could not be used through the credential proxy. Bundle is ~3.1 MB gzipped: needs the Workers paid plan (10 MB) or shrinking for free (3 MB). Prefer switching back to the `assets` binding when deploying with a normal token.
-- Deployed demo: https://apexlab.cou-hackathon.workers.dev (synthetic data only).
+```
+page / route ─► Repository (lazy) ─► RoutedRepository ─┬─ "demo-*" keys ─► FixtureRepository (bundled JSON)
+                                                       └─ everything else ─► OpenF1Repository
+                                                                              └─ OpenF1Client ─► cache: memory → (KV | disk) ─► api.openf1.org
+```
+
+- The repository is **lazy** (seasons → events → session detail → lap telemetry) because a full real catalogue is too large to load at once.
+- **Caching:** an in-memory LRU per isolate, plus a durable layer. In production that's Cloudflare KV (`OPENF1_CACHE` binding). In local dev it's a disk cache when `OPENF1_CACHE_DIR` is set. Completed sessions get 30 days; calendars get an hour.
+- **Rate limit:** OpenF1's free tier allows a few requests per second and a per-minute cap. The client spaces requests 350 ms apart, retries 429/5xx with backoff, and fails fast with `UPSTREAM_UNAVAILABLE` (HTTP 503) instead of hanging when asked to wait more than 4 s.
+- A cold comparison costs ~8 upstream calls: session, meeting, drivers, laps, stints, 2× car data, 1× location. The track only needs one lap's positions.
+
+## Calculations
+
+See `/methodology` in the app. The key decision: OpenF1 has no distance channel, so distance is integrated from speed and both laps are scaled to their mean length. That makes the finish-line gap equal the official lap-time delta, which is covered by a test and was verified live (Monaco 2024 Q: +0.154 s).
+
+## Decisions
+
+- **Real data via OpenF1, fetched at request time with caching.** This replaced "Python ingestion only" for the web, because pre-ingesting every session would exceed Worker bundle limits. Python keeps offline snapshots and validation, mirroring the TS normalisation.
+- **FastF1 not used:** its upstream (F1 live timing) returned 401 from the build environment.
+- **Postgres is not in the request path.** The deployed Worker has no database, and URLs are the share mechanism.
+- **Share links are URLs:** `/compare?session=&a=&la=&b=&lb=`. A partial URL (`?session=…&a=…&b=…`) is completed server-side (fastest laps) and redirected to its canonical form.
+
+## Cloudflare deployment
+
+- `pnpm --filter @apexlab/web cf:deploy` builds with `@opennextjs/cloudflare`, embeds static assets, and runs `wrangler deploy`. It needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+- Static assets are embedded in the Worker (`worker-entry.ts`, `scripts/embed-assets.mjs`) because the Workers Assets upload could not be used through the credential proxy in the build environment. With a normal token, switching back to the `assets` binding is preferable.
+- The demo fixtures are bundled via `scripts/bundle-fixtures.mjs` → `src/server/fixtures.bundle.json`.

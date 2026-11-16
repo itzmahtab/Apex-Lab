@@ -1,9 +1,10 @@
 import "server-only";
 import {
-  CALCULATION_VERSION, comparisonQuerySchema, type ComparisonQuery, type ComparisonResult, type Catalog,
+  CALCULATION_VERSION, comparisonQuerySchema, keySchema,
+  type ComparisonQuery, type ComparisonResult, type LapSummary, type SessionDetail,
 } from "@apexlab/contracts";
 import {
-  METHODOLOGY, alignByDistance, deterministicSummary, lapDeltaMs, missingSignals, sectorDeltasMs,
+  METHODOLOGY, alignByDistance, deterministicSummary, lapDeltaMs, lapLength, miniSectors, missingSignals, sectorDeltasMs, trackMap,
 } from "@apexlab/analytics";
 import { AppError } from "./errors";
 import { getRepository } from "./repository";
@@ -14,38 +15,60 @@ export function parseQuery(input: Record<string, unknown>): ComparisonQuery {
   return r.data;
 }
 
-/** Validate the selection against the catalog: existence AND relationships (never trust client IDs). */
-export function resolveSelection(catalog: Catalog, q: ComparisonQuery) {
-  const session = catalog.sessions.find((s) => s.key === q.session);
-  if (!session) throw new AppError("NOT_FOUND", "Unknown session.");
-  const event = catalog.events.find((e) => e.key === session.eventKey);
-  const season = catalog.seasons.find((s) => s.eventKeys.includes(session.eventKey));
-  if (!event || !season) throw new AppError("NOT_FOUND", "Unknown event.");
-  const driver = (k: string) => {
-    const d = session.drivers.find((x) => x.key === k);
-    if (!d) throw new AppError("VALIDATION_ERROR", `Driver "${k}" is not in this session.`);
-    return d;
-  };
-  const lap = (k: string, n: number) => {
-    const l = session.laps.find((x) => x.driverKey === k && x.lapNumber === n);
-    if (!l) throw new AppError("VALIDATION_ERROR", `Lap ${n} does not exist for driver "${k}".`);
-    return l;
-  };
-  return { session, event, season, dA: driver(q.a), dB: driver(q.b), lA: lap(q.a, q.la), lB: lap(q.b, q.lb) };
+export async function loadSession(sessionKey: unknown): Promise<SessionDetail> {
+  const k = keySchema.safeParse(sessionKey);
+  if (!k.success) throw new AppError("VALIDATION_ERROR", "Invalid session.");
+  const s = await getRepository().getSession(k.data);
+  if (!s) throw new AppError("NOT_FOUND", "Unknown session.");
+  return s;
+}
+
+/** A lap is a sensible default if it has a time and telemetry and is not an out-lap. */
+const usable = (l: LapSummary) => l.lapTimeMs != null && l.hasTelemetry && l.isPitOutLap !== true && l.isValid !== false;
+
+export function fastestLap(s: SessionDetail, driverKey: string): LapSummary | undefined {
+  return s.laps.filter((l) => l.driverKey === driverKey && usable(l)).sort((a, b) => a.lapTimeMs! - b.lapTimeMs!)[0];
+}
+
+/** Fastest lap per driver, fastest first. Drivers without a usable lap are listed last. */
+export function leaderboard(s: SessionDetail) {
+  const rows = s.drivers.map((d) => ({ driver: d, lap: fastestLap(s, d.key) ?? null }));
+  const timed = rows.filter((r) => r.lap).sort((a, b) => a.lap!.lapTimeMs! - b.lap!.lapTimeMs!);
+  return [...timed, ...rows.filter((r) => !r.lap)];
+}
+
+/** Fill in whatever is missing from a partial selection: top-2 drivers by fastest lap, each driver's fastest lap. */
+export function completeSelection(s: SessionDetail, q: { a?: string; b?: string; la?: number; lb?: number }): ComparisonQuery | null {
+  const board = leaderboard(s).filter((r) => r.lap);
+  const a = q.a && s.drivers.some((d) => d.key === q.a) ? q.a : board[0]?.driver.key;
+  const b = q.b && q.b !== a && s.drivers.some((d) => d.key === q.b) ? q.b : board.find((r) => r.driver.key !== a)?.driver.key;
+  if (!a || !b) return null;
+  const la = q.la && s.laps.some((l) => l.driverKey === a && l.lapNumber === q.la) ? q.la : fastestLap(s, a)?.lapNumber;
+  const lb = q.lb && s.laps.some((l) => l.driverKey === b && l.lapNumber === q.lb) ? q.lb : fastestLap(s, b)?.lapNumber;
+  return la && lb ? { session: s.session.key, a, la, b, lb } : null;
 }
 
 export async function buildComparison(input: Record<string, unknown>): Promise<ComparisonResult> {
   const q = parseQuery(input);
-  const repo = getRepository();
-  const catalog = await repo.getCatalog();
-  const { session, event, season, dA, dB, lA, lB } = resolveSelection(catalog, q);
+  const s = await loadSession(q.session);
+  const driver = (k: string) => {
+    const d = s.drivers.find((x) => x.key === k);
+    if (!d) throw new AppError("VALIDATION_ERROR", `Driver "${k}" did not take part in this session.`);
+    return d;
+  };
+  const lap = (k: string, n: number) => {
+    const l = s.laps.find((x) => x.driverKey === k && x.lapNumber === n);
+    if (!l) throw new AppError("VALIDATION_ERROR", `Lap ${n} does not exist for car ${k}.`);
+    return l;
+  };
+  const dA = driver(q.a), dB = driver(q.b), lA = lap(q.a, q.la), lB = lap(q.b, q.lb);
 
+  const repo = getRepository();
   const [artA, artB] = await Promise.all([
-    lA.hasTelemetry ? repo.getArtifact(q.session, q.a, q.la) : null,
-    lB.hasTelemetry ? repo.getArtifact(q.session, q.b, q.lb) : null,
+    lA.hasTelemetry ? repo.getLapTelemetry(q.session, q.a, q.la) : null,
+    // The track outline only needs one lap's positions; skipping B's saves an upstream call.
+    lB.hasTelemetry ? repo.getLapTelemetry(q.session, q.b, q.lb, { withTrack: !lA.hasTelemetry }) : null,
   ]);
-  if ((lA.hasTelemetry && !artA) || (lB.hasTelemetry && !artB))
-    throw new AppError("TELEMETRY_UNAVAILABLE", "Telemetry for a selected lap is missing.");
 
   const sectorsA: [number | null, number | null, number | null] = [lA.sector1Ms, lA.sector2Ms, lA.sector3Ms];
   const sectorsB: [number | null, number | null, number | null] = [lB.sector1Ms, lB.sector2Ms, lB.sector3Ms];
@@ -56,28 +79,41 @@ export async function buildComparison(input: Record<string, unknown>): Promise<C
   const missing = new Set<string>();
   let points: ComparisonResult["points"] = [];
   let brakeKind: "percent" | "boolean" = "percent";
+  let length: number | null = null;
+  let sectors: ComparisonResult["miniSectors"] = [];
+  let track: ComparisonResult["track"] = null;
   if (artA && artB) {
     if (artA.units.brake !== artB.units.brake) {
       warnings.push("The two laps report brake data in different forms, so the brake chart is hidden.");
       missing.add("brake");
     } else brakeKind = artA.units.brake;
-    points = alignByDistance(artA, artB);
+    points = alignByDistance(artA, artB, { normalizeLength: true });
+    length = Math.round(lapLength(artA, artB, true));
+    sectors = miniSectors(points);
+    track = trackMap(artA, length, sectors) ?? trackMap(artB, length, sectors);
     for (const [art, label] of [[artA, dA.abbreviation], [artB, dB.abbreviation]] as const)
       for (const m of missingSignals(art)) { missing.add(m); warnings.push(`${label}: ${m} signal not available for this lap.`); }
   } else {
-    for (const m of ["speed", "throttle", "brake"]) missing.add(m);
-    warnings.push("Telemetry is not available for one or both selected laps; showing lap and sector times only.");
+    for (const m of ["speed", "throttle", "brake", "time"]) missing.add(m);
+    warnings.push("Telemetry is not available for one or both selected laps, so only lap and sector times are shown.");
   }
-  for (const [l, d] of [[lA, dA], [lB, dB]] as const)
-    if (l.isValid === false) warnings.push(`${d.abbreviation} lap ${l.lapNumber} is flagged invalid (e.g. track limits); it is included because you selected it.`);
+  for (const [l, d] of [[lA, dA], [lB, dB]] as const) {
+    if (l.isValid === false) warnings.push(`${d.abbreviation} lap ${l.lapNumber} is flagged invalid; it is included because you selected it.`);
+    if (l.isPitOutLap) warnings.push(`${d.abbreviation} lap ${l.lapNumber} is an out-lap from the pits, so it is not representative.`);
+  }
 
-  const isDemo = session.source.rightsStatus === "synthetic-demo";
+  const isDemo = s.source.rightsStatus === "synthetic-demo";
+  const side = (d: typeof dA, l: LapSummary, sec: typeof sectorsA) => ({
+    driverKey: d.key, abbreviation: d.abbreviation, displayName: d.displayName,
+    teamName: d.teamName ?? null, teamColour: d.teamColour ?? null, compound: l.compound,
+    lapNumber: l.lapNumber, lapTimeMs: l.lapTimeMs, sectorsMs: sec, isValid: l.isValid,
+  });
   return {
     calculationVersion: CALCULATION_VERSION,
-    session: { key: session.key, name: session.name, eventName: event.name, circuitName: event.circuitName, season: season.year },
-    source: { name: session.source.name, rightsStatus: session.source.rightsStatus, isDemo },
-    a: { driverKey: dA.key, abbreviation: dA.abbreviation, displayName: dA.displayName, lapNumber: lA.lapNumber, lapTimeMs: lA.lapTimeMs, sectorsMs: sectorsA, isValid: lA.isValid },
-    b: { driverKey: dB.key, abbreviation: dB.abbreviation, displayName: dB.displayName, lapNumber: lB.lapNumber, lapTimeMs: lB.lapTimeMs, sectorsMs: sectorsB, isValid: lB.isValid },
+    session: { key: s.session.key, name: s.session.name, eventKey: s.event.key, eventName: s.event.name, circuitName: s.event.circuitName, season: s.event.year },
+    source: { name: s.source.name, rightsStatus: s.source.rightsStatus, isDemo, attribution: s.source.attribution },
+    a: side(dA, lA, sectorsA),
+    b: side(dB, lB, sectorsB),
     lapDeltaMs: delta,
     sectorDeltasMs: sd,
     brakeKind,
@@ -86,20 +122,19 @@ export async function buildComparison(input: Record<string, unknown>): Promise<C
     summary: deterministicSummary({ aLabel: `${dA.abbreviation} (lap ${lA.lapNumber})`, bLabel: `${dB.abbreviation} (lap ${lB.lapNumber})`, lapDeltaMs: delta, sectorDeltasMs: sd }),
     methodology: [...METHODOLOGY],
     points,
+    lapLengthM: length,
+    miniSectors: sectors,
+    track,
   };
-}
-
-/** Suggested starting selection: first session, first two drivers, each one's fastest valid lap with telemetry. */
-export function defaultSelection(catalog: Catalog): ComparisonQuery | null {
-  const s = catalog.sessions[0];
-  const [d1, d2] = s?.drivers ?? [];
-  if (!s || !d1 || !d2) return null;
-  const best = (k: string) =>
-    s.laps.filter((l) => l.driverKey === k && l.hasTelemetry && l.isValid !== false && l.lapTimeMs != null)
-      .sort((x, y) => x.lapTimeMs! - y.lapTimeMs!)[0]?.lapNumber;
-  const la = best(d1.key), lb = best(d2.key);
-  return la && lb ? { session: s.key, a: d1.key, la, b: d2.key, lb } : null;
 }
 
 export const toQueryString = (q: ComparisonQuery) =>
   new URLSearchParams({ session: q.session, a: q.a, la: String(q.la), b: q.b, lb: String(q.lb) }).toString();
+
+/** Hand-picked real sessions for the landing page. Laps resolve to each driver's fastest lap via redirect. */
+export const FEATURED = [
+  { session: "9908", a: "1", b: "4", aAbbr: "VER", bAbbr: "NOR", aColour: "3671C6", bColour: "FF8000", event: "Italian GP 2025 · Qualifying", title: "Fastest lap in F1 history", blurb: "Verstappen's 1:18.792 Monza pole against Norris." },
+  { session: "9519", a: "16", b: "81", aAbbr: "LEC", bAbbr: "PIA", aColour: "E80020", bColour: "FF8000", event: "Monaco GP 2024 · Qualifying", title: "Leclerc's home pole", blurb: "The tightest lap of the year, decided by 0.154 s." },
+  { session: "9554", a: "63", b: "44", aAbbr: "RUS", bAbbr: "HAM", aColour: "27F4D2", bColour: "27F4D2", event: "British GP 2024 · Qualifying", title: "Mercedes front-row lockout", blurb: "Same car, two drivers: where did Russell find it?" },
+  { session: "9161", a: "55", b: "63", aAbbr: "SAI", bAbbr: "RUS", aColour: "E80020", bColour: "27F4D2", event: "Singapore GP 2023 · Qualifying", title: "Sainz under the lights", blurb: "The only 2023 pole Red Bull didn't take." },
+] as const;
