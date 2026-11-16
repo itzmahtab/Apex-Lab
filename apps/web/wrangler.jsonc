@@ -4,5 +4,8 @@
   "main": "worker-entry.ts",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  "vars": { "DATA_SOURCE": "fixture" }
+  "vars": { "DATA_SOURCE": "openf1" },
+  // Durable cache for OpenF1 responses (completed sessions are cached for 30 days)
+  "kv_namespaces": [{ "binding": "OPENF1_CACHE", "id": "834e0d749dfd4ac7a35d3d8c73094715" }],
+  "observability": { "enabled": true }
 }

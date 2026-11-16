@@ -122,6 +122,11 @@ export default async function ComparePage({ searchParams }: { searchParams: SP }
             </div>}>
             <Result query={query} />
           </Suspense>
+        ) : !initial ? (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Meanwhile, these are ready to go</h2>
+            <FeaturedGrid />
+          </div>
         ) : query.session ? (
           <ErrorState title="That session has no comparable laps" message="Either the session has not happened yet or no timed laps with telemetry exist. Pick another session above." />
         ) : (

@@ -10,6 +10,8 @@
   --color-muted: #9aa4b2;
   --color-subtle: #6b7484;
   --color-accent: #ff453a;
+  /* white text on this fill is 4.8:1 (WCAG AA); use for buttons, keep --accent for lines and highlights */
+  --color-accent-fill: #d92d20;
   --color-telemetry: #56b4e9;
   --color-throttle: #67d5a5;
   --color-warn: #f6c453;

@@ -1,7 +1,6 @@
 # ApexLab F1 --- Project Memory
 
-This file is the handoff note for future ChatGPT sessions or
-collaborators. Update it after each meaningful implementation phase.
+This file is the handoff note for future sessions or collaborators. Update it after each meaningful implementation phase.
 
 ## Project identity
 
@@ -114,14 +113,31 @@ and deployment are future work.
 
 ## Progress log
 
--   Initial specification created.
--   Phases 1-10 implemented locally (see `README.md`, `docs/architecture-notes.md`).
--   Verified by running: Vitest (analytics, contracts), pytest (ingestion), `next build`,
-    API error cases via curl, Playwright smoke on desktop and 390px mobile (no console errors,
-    no horizontal overflow, selector -> URL -> reload restores selection), Postgres migration + idempotent seed.
--   NOT done: phases 11-14 (formal testing/Playwright suite, deployment, monetization), keyboard/reduced-motion audit,
-    real FastF1 normalization (adapter is a gated stub), light theme, saved `comparisons` rows, driver pages.
--   Next action: review, then Phase 11 (dedicated testing) or real-data rights decision.
+-   Phases 1-10 built (local MVP on synthetic data), then extended:
+-   **Real data:** OpenF1 (free, public, 2023+) via `packages/openf1`. FastF1 is not used: its upstream
+    (F1 live timing) returned 401 from the build environment.
+-   **Deployed:** Cloudflare Workers via OpenNext, with a KV namespace `apexlab-openf1-cache`
+    (binding `OPENF1_CACHE`). Live at https://apexlab.cou-hackathon.workers.dev.
+-   **UI rebuilt:** landing page, compare workspace (track dominance map, synced telemetry, sectors,
+    lap stats), calendar, event and session pages (fastest laps, tyre strategy), share card.
+-   **Verified by running:** 33 Vitest + 13 pytest tests; production build; live API checks (Monaco 2024
+    Q delta +0.154 s matches official); browser journeys on desktop and mobile with no console errors.
+-   **Playwright + axe suite** (24 tests, desktop + mobile, offline demo data) added and wired into CI;
+    it found and fixed a WCAG contrast failure (white on #FF453A) and invalid <dl> markup.
+-   **Not done:** manual screen-reader audit, light theme, saved comparisons,
+    driver profile pages, the workers.dev subdomain change (needs owner confirmation: it would also move
+    the account's other Worker, `cou-hackathon`).
+
+## Decision log
+
+-   2026-11-16 · Real data from OpenF1 fetched at request time with layered caching, instead of
+    pre-ingesting everything. Reason: a full catalogue exceeds Worker bundle limits; OpenF1 is free and
+    keyless. Consequence: rate limits. Mitigated with stale-if-error caching, KV, and a cache-warming job.
+-   2026-11-16 · Postgres removed from the request path (the Worker has no database). Schema and
+    migrations are kept for ingestion-side storage and future saved comparisons.
+-   2026-11-16 · Static assets embedded in the Worker, because the Workers Assets upload uses a JWT that
+    the build environment's credential proxy overwrites. Revisit when deploying with a normal token.
+-   2026-11-16 · Commercial use stays blocked until data rights are reviewed (`docs/data-rights.md`).
 
 ## Decision log template
 
