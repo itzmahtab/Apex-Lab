@@ -14,3 +14,9 @@ Decisions
 - Build emits a Turbopack warning about dynamic filesystem tracing in `repository.ts`; revisit in Phase 12 deployment work.
 
 API: `GET /api/seasons`, `/api/events?season=`, `/api/sessions?eventId=`, `/api/sessions/:key/drivers`, `/api/comparisons/data?session&a&la&b&lb`, `/api/share-card?...[&download=1]`. Errors: `{error:{code,message}}`.
+
+## Cloudflare deployment (Workers via OpenNext)
+- `apps/web`: `pnpm cf:deploy` (build with `@opennextjs/cloudflare`, embed static assets, `wrangler deploy`). Needs `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID`.
+- Fixture mode only on Workers: demo data is bundled via `scripts/bundle-fixtures.mjs` -> `src/server/fixtures.bundle.json` (re-run after `pnpm fixtures`).
+- Static assets are embedded in the Worker (`worker-entry.ts`, `scripts/embed-assets.mjs`) because the Workers Assets upload could not be used through the credential proxy. Bundle is ~3.1 MB gzipped: needs the Workers paid plan (10 MB) or shrinking for free (3 MB). Prefer switching back to the `assets` binding when deploying with a normal token.
+- Deployed demo: https://apexlab.cou-hackathon.workers.dev (synthetic data only).

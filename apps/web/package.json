@@ -7,12 +7,16 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc -p .",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "cf:build": "opennextjs-cloudflare build && node scripts/embed-assets.mjs",
+    "cf:preview": "pnpm cf:build && wrangler dev",
+    "cf:deploy": "pnpm cf:build && wrangler deploy"
   },
   "dependencies": {
     "@apexlab/analytics": "workspace:*",
     "@apexlab/contracts": "workspace:*",
     "@apexlab/db": "workspace:*",
+    "@opennextjs/cloudflare": "1.20.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "motion": "^14.14.0",
@@ -31,6 +35,7 @@
     "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "wrangler": "^4.162.0"
   }
 }

@@ -8,3 +8,5 @@ __pycache__
 .venv
 data/artifacts
 data/cache
+.open-next
+.wrangler
