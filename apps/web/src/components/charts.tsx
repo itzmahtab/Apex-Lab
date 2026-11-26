@@ -16,7 +16,7 @@ function TooltipBox({ active, payload, label, unit, labels, colours, digits = 0 
   const v = (k: string) => payload.find((p) => String(p.dataKey).endsWith(k))?.value as number | null | undefined;
   const fmt = (x: number | null | undefined) => (x == null ? "no data" : `${x.toFixed(digits)} ${unit}`);
   return (
-    <div className="rounded-xl border border-border-strong bg-[#0d1015]/95 px-3 py-2 text-xs shadow-2xl backdrop-blur">
+    <div className="rounded-lg border border-border-strong bg-[#0d1015]/95 px-3 py-2 text-xs shadow-2xl backdrop-blur">
       <div className="mb-1 text-subtle num">{Math.round(Number(label))} m</div>
       <div className="flex items-center gap-2" style={{ color: colours.a }}><span className="w-9 font-semibold">{labels.a}</span><span className="num text-fg">{fmt(v("A"))}</span></div>
       <div className="flex items-center gap-2" style={{ color: colours.b }}><span className="w-9 font-semibold">{labels.b}</span><span className="num text-fg">{fmt(v("B"))}</span></div>
@@ -71,7 +71,7 @@ function DeltaPanel({ data, labels, colours, syncId }: { data: ChartPoint[]; lab
                 if (!active || !payload?.length) return null;
                 const d = (payload[0]?.payload as ChartPoint | undefined)?.deltaS;
                 return (
-                  <div className="rounded-xl border border-border-strong bg-[#0d1015]/95 px-3 py-2 text-xs shadow-2xl">
+                  <div className="rounded-lg border border-border-strong bg-[#0d1015]/95 px-3 py-2 text-xs shadow-2xl">
                     <div className="mb-1 text-subtle num">{Math.round(Number(label))} m</div>
                     <div className="num text-fg">{d == null ? "no data" : d === 0 ? "level" : `${d > 0 ? labels.a : labels.b} ahead by ${Math.abs(d).toFixed(3)} s`}</div>
                   </div>

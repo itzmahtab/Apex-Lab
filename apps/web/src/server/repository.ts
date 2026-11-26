@@ -115,12 +115,23 @@ async function fsCache(): Promise<CacheStore | null> {
 }
 
 const memory = new MemoryCache(400);
+
+/** Workers' waitUntil, so background cache refreshes finish after the response is sent. */
+async function waitUntilHook(): Promise<((p: Promise<unknown>) => void) | undefined> {
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const ctx = getCloudflareContext().ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
+    return ctx?.waitUntil ? (p) => ctx.waitUntil!(p) : undefined;
+  } catch {
+    return undefined;
+  }
+}
 let openf1: OpenF1Repository | undefined;
 async function openF1(): Promise<OpenF1Repository> {
   // KV is request-scoped on Workers, so the layered cache is rebuilt per call; the memory layer is shared.
   const durable = (await kvCache()) ?? (await fsCache());
-  if (!durable) return (openf1 ??= new OpenF1Repository(new OpenF1Client({ cache: memory })));
-  return new OpenF1Repository(new OpenF1Client({ cache: new LayeredCache([memory, durable]) }));
+  if (!durable) return (openf1 ??= new OpenF1Repository(new OpenF1Client({ cache: memory, staleWhileRevalidate: true })));
+  return new OpenF1Repository(new OpenF1Client({ cache: new LayeredCache([memory, durable]), staleWhileRevalidate: true, waitUntil: await waitUntilHook() }));
 }
 
 /** Direct access to the OpenF1 adapter, for season-hub data that sits outside the Repository interface. */
@@ -136,8 +147,8 @@ export async function jolpicaClient(): Promise<OpenF1Client> {
   const opts = { baseUrl: "https://api.jolpi.ca/ergast/f1", minIntervalMs: 400, notFoundAsEmpty: false, timeoutMs: 10000, retries: 4, retryStatuses: [403],
     userAgent: "ApexLab/1.0 (+https://github.com/itzmahtab/apex-lab)" };
   const durable = (await kvCache()) ?? (await fsCache());
-  if (!durable) return (jolpica ??= new OpenF1Client({ ...opts, cache: memory }));
-  return new OpenF1Client({ ...opts, cache: new LayeredCache([memory, durable]) });
+  if (!durable) return (jolpica ??= new OpenF1Client({ ...opts, cache: memory, staleWhileRevalidate: true }));
+  return new OpenF1Client({ ...opts, cache: new LayeredCache([memory, durable]), staleWhileRevalidate: true, waitUntil: await waitUntilHook() });
 }
 
 /** Converts upstream failures into a stable, user-safe error. */

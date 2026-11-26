@@ -11,7 +11,26 @@ const table = assets as Record<string, { type: string; body: string; b64?: boole
 
 const decode = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 
+/**
+ * Keep-alive for the free Render instance of f1-livetiming-api (Render sleeps after 15 idle minutes,
+ * which also drops its connection to F1's live-timing feed). A Cron Trigger pings it every 10 minutes.
+ */
+async function keepLiveTimingAwake(env: { LIVETIMING_API_URL?: string }) {
+  const base = env.LIVETIMING_API_URL?.replace(/\/$/, "");
+  if (!base) return;
+  try {
+    const r = await fetch(`${base}/api/status`, { headers: { "user-agent": "ApexLab keep-alive" }, signal: AbortSignal.timeout(60_000) });
+    console.log("[apexlab] keep-alive", r.status);
+  } catch (e) {
+    console.log("[apexlab] keep-alive failed", e instanceof Error ? e.message : e);
+  }
+}
+
 export default {
+  async scheduled(_event: unknown, env: { LIVETIMING_API_URL?: string }, ctx: { waitUntil(p: Promise<unknown>): void }) {
+    ctx.waitUntil(keepLiveTimingAwake(env));
+  },
+
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const { pathname } = new URL(request.url);
     const a = request.method === "GET" || request.method === "HEAD" ? table[pathname] : undefined;

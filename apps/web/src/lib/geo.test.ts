@@ -39,3 +39,13 @@ describe("geo", () => {
     expect(countdownParts(-1000)).toEqual({ d: 0, h: 0, m: 0, s: 0 });
   });
 });
+
+import { feedTimeToUtc } from "./geo";
+describe("feedTimeToUtc", () => {
+  it("applies the feed's GMT offset", () => {
+    expect(feedTimeToUtc("2026-11-21T20:00:00", "-08:00:00")).toBe("2026-11-22T04:00:00.000Z");
+    expect(feedTimeToUtc("2026-11-29T19:00:00", "03:00:00")).toBe("2026-11-29T16:00:00.000Z");
+    expect(feedTimeToUtc("2026-11-29T16:00:00Z", "03:00:00")).toBe("2026-11-29T16:00:00Z");
+    expect(feedTimeToUtc("", "03:00:00")).toBeNull();
+  });
+});

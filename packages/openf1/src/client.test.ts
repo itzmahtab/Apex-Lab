@@ -57,6 +57,18 @@ describe("stale-if-error", () => {
     expect(await ok.c.list("x", {}, row, 60)).toEqual([{ n: 2 }]);
     expect(JSON.parse((await cache.get(url))!).d).toEqual([{ n: 2 }]);
   });
+  it("with staleWhileRevalidate, answers from the stale copy at once and refreshes in the background", async () => {
+    const cache = new MemoryCache();
+    const url = "https://api.openf1.org/v1/x";
+    await cache.put(url, JSON.stringify({ d: [{ n: 1 }], f: Date.now() - 1 }), 60);
+    const bg: Promise<unknown>[] = [];
+    const { c, fetchImpl } = client([res(200, [{ n: 2 }])], { cache, staleWhileRevalidate: true, waitUntil: (p: Promise<unknown>) => bg.push(p) });
+    expect(await c.list("x", {}, row, 60)).toEqual([{ n: 1 }]);
+    expect(bg).toHaveLength(1);
+    await Promise.all(bg);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(await c.list("x", {}, row, 60)).toEqual([{ n: 2 }]);
+  });
   it("still errors when there is nothing cached", async () => {
     const { c } = client([res(429, {}, { "retry-after": "60" })]);
     await expect(c.list("x", {}, row, 60)).rejects.toBeInstanceOf(UpstreamError);

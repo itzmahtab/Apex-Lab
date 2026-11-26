@@ -12,7 +12,7 @@ type Side = ComparisonResult["a"];
 
 function DriverPanel({ s, colour, dashed, align }: { s: Side; colour: string; dashed?: boolean; align: "left" | "right" }) {
   return (
-    <div className={`relative overflow-hidden rounded-xl border border-border bg-elevated/60 p-4 ${align === "right" ? "sm:text-right" : ""}`}>
+    <div className={`relative overflow-hidden rounded-lg border border-border bg-elevated/60 p-4 ${align === "right" ? "sm:text-right" : ""}`}>
       <div className="absolute inset-x-0 top-0 h-1" style={{ background: colour }} aria-hidden />
       <div className={`flex items-center gap-2 text-xs text-muted ${align === "right" ? "sm:justify-end" : ""}`}>
         <LineKey colour={colour} dashed={dashed} /> Driver {dashed ? "B" : "A"} · lap {s.lapNumber} <CompoundBadge compound={s.compound} />
@@ -64,7 +64,7 @@ export function ComparisonResultView({ c, children }: { c: ComparisonResult; chi
         </div>
         <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr]">
           <DriverPanel s={c.a} colour={colours.a} align="left" />
-          <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-bg/60 px-6 py-4 text-center">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-bg/60 px-6 py-4 text-center">
             <div className="text-xs uppercase tracking-[0.14em] text-muted">Gap B − A</div>
             <div className="mt-1 text-4xl font-bold num sm:text-5xl" style={{ color: d == null || d === 0 ? undefined : d < 0 ? colours.b : colours.a }}>{formatDelta(d)}</div>
             <div className="mt-1 text-sm font-medium">{verdict}</div>
@@ -132,7 +132,7 @@ export function ComparisonResultView({ c, children }: { c: ComparisonResult; chi
         {c.points.length ? <TelemetryPanel data={c.points} labels={labels} colours={colours} missing={c.missingSignals} brakeKind={c.brakeKind} />
           : <EmptyState title="No telemetry for this selection">Lap and sector times above are still valid. Pick laps with telemetry to see the traces.</EmptyState>}
         {c.points.length > 0 && (
-          <details className="mt-5 rounded-xl border border-border bg-bg/40 p-3 text-sm">
+          <details className="mt-5 rounded-lg border border-border bg-bg/40 p-3 text-sm">
             <summary className="cursor-pointer text-muted hover:text-fg">Data table (accessible alternative to the charts)</summary>
             <div className="mt-3 max-h-80 overflow-auto">
               <table className="w-full text-left text-xs">
@@ -151,7 +151,7 @@ export function ComparisonResultView({ c, children }: { c: ComparisonResult; chi
 
       {children}
 
-      <details className="rounded-2xl border border-border bg-surface/60 p-4 sm:p-5">
+      <details className="rounded-lg border border-border bg-surface/60 p-4 sm:p-5">
         <summary className="cursor-pointer font-medium">Methodology, source and limitations</summary>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-muted">
           {c.methodology.map((m) => <li key={m}>{m}</li>)}

@@ -62,13 +62,13 @@ export function Globe({ pins, focusId, onSelect, className }: {
           void main(){
             float d = dot(vN, uSun);
             float day = smoothstep(-0.08, 0.18, d);
-            vec3 night = vec3(0.020,0.026,0.040);
-            vec3 dayC = vec3(0.055,0.090,0.150);
+            vec3 night = vec3(0.045,0.045,0.048);
+            vec3 dayC = vec3(0.10,0.11,0.13);
             vec3 c = mix(night, dayC, day);
             float term = exp(-pow(d*9.0,2.0));            // warm band along the terminator
-            c += vec3(1.0,0.36,0.18) * term * 0.10;
+            c += vec3(0.80,0.33,0.0) * term * 0.16;
             float rim = pow(1.0 - abs(vW.z), 3.0);
-            c += vec3(0.22,0.45,0.75) * rim * (0.15 + 0.35*day);
+            c += vec3(0.0,0.28,0.67) * rim * (0.25 + 0.45*day);
             gl_FragColor = vec4(c, 1.0);
           }`,
       }),
@@ -112,11 +112,11 @@ export function Globe({ pins, focusId, onSelect, className }: {
         void main(){
           vec2 p = gl_PointCoord - .5; if (dot(p,p) > .25) discard;
           float day = smoothstep(-0.06, 0.2, vD);
-          vec3 dayC = mix(vec3(0.55,0.66,0.80), vec3(0.85,0.90,0.97), vS);
-          vec3 nightC = vec3(0.26,0.31,0.42);
+          vec3 dayC = mix(vec3(0.60,0.60,0.60), vec3(0.96,0.96,0.94), vS);
+          vec3 nightC = vec3(0.30,0.30,0.31);
           // a few "city lights" twinkle on the night side
           float city = step(0.9, vS) * (1.0 - day) * (0.75 + 0.25*sin(uTime*1.7 + vS*80.0));
-          vec3 c = mix(nightC, dayC, day) + vec3(1.0,0.66,0.32) * city;
+          vec3 c = mix(nightC, dayC, day) + vec3(0.80,0.47,0.13) * city * 1.2;
           float a = mix(0.7, 0.95, day) * smoothstep(0.0, 0.25, vFacing);
           gl_FragColor = vec4(c, a);
         }`,
@@ -131,7 +131,7 @@ export function Globe({ pins, focusId, onSelect, className }: {
         vertexShader: `varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(normalMatrix*normal); vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
         fragmentShader: `uniform vec3 uSun; varying vec3 vN; varying vec3 vP;
           void main(){ float i = pow(clamp(0.66 - dot(vN, vec3(0,0,1.)), 0.0, 1.0), 4.0); float day = 0.35 + 0.65*smoothstep(-0.3,0.4,dot(vP,uSun));
-            gl_FragColor = vec4(vec3(0.30,0.58,1.0) * i * day * 1.1, 1.0); }`,
+            gl_FragColor = vec4(vec3(0.0,0.36,0.85) * i * day * 1.3, 1.0); }`,
       }),
     );
     scene.add(atmo);
@@ -157,7 +157,7 @@ export function Globe({ pins, focusId, onSelect, className }: {
           void main(){
             float flow = fract(vT*3.0 - uTime*0.35 + uPhase);
             float dash = smoothstep(0.0,0.08,flow) * (1.0 - smoothstep(0.35,0.5,flow));
-            vec3 c = mix(vec3(0.45,0.52,0.62), vec3(1.0,0.27,0.23), uDone);
+            vec3 c = mix(vec3(0.55,0.55,0.55), vec3(0.80,0.33,0.0), uDone);
             float a = mix(0.18, 0.55, uDone) + dash * mix(0.25, 0.6, uDone);
             float ends = smoothstep(0.0,0.06,vT) * smoothstep(1.0,0.94,vT);
             gl_FragColor = vec4(c, a*ends);
@@ -173,7 +173,7 @@ export function Globe({ pins, focusId, onSelect, className }: {
     const hitTargets: THREE.Mesh[] = [];
     const pulses: THREE.Mesh[] = [];
     const Z = new THREE.Vector3(0, 0, 1);
-    const colourOf = (s: GlobePin["state"]) => (s === "next" || s === "live" ? 0xff453a : s === "completed" ? 0xf4f6f8 : 0x56b4e9);
+    const colourOf = (s: GlobePin["state"]) => (s === "next" || s === "live" ? 0xcc7722 : s === "completed" ? 0xf4f4f1 : 0x5b8fe0);
     for (const p of pins) {
       const v = new THREE.Vector3(...latLngToXYZ(p.lat, p.lng));
       const holder = new THREE.Group();
@@ -189,7 +189,7 @@ export function Globe({ pins, focusId, onSelect, className }: {
       ring.position.z = 0.002;
       holder.add(stem, head, ring);
       if (hot) {
-        const pulse = new THREE.Mesh(new THREE.RingGeometry(0.02, 0.028, 48), new THREE.MeshBasicMaterial({ color: 0xff453a, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+        const pulse = new THREE.Mesh(new THREE.RingGeometry(0.02, 0.028, 48), new THREE.MeshBasicMaterial({ color: 0xcc7722, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
         pulse.position.z = 0.003;
         holder.add(pulse); pulses.push(pulse);
       }
@@ -202,7 +202,7 @@ export function Globe({ pins, focusId, onSelect, className }: {
     }
 
     // selection halo
-    const halo = new THREE.Mesh(new THREE.RingGeometry(0.035, 0.042, 48), new THREE.MeshBasicMaterial({ color: 0xf6c453, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+    const halo = new THREE.Mesh(new THREE.RingGeometry(0.035, 0.042, 48), new THREE.MeshBasicMaterial({ color: 0xf4f4f1, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
     halo.visible = false;
     world.add(halo);
 

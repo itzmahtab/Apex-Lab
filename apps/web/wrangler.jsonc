@@ -4,7 +4,13 @@
   "main": "worker-entry.ts",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  "vars": { "DATA_SOURCE": "openf1" },
+  "vars": {
+    "DATA_SOURCE": "openf1",
+    // Real-time timing for /live: a hosted julesr0y/f1-livetiming-api instance
+    "LIVETIMING_API_URL": "https://f1-live-api-x79b.onrender.com"
+  },
+  // Every 10 minutes: ping the Render instance so its free tier never sleeps (see worker-entry.ts)
+  "triggers": { "crons": ["*/10 * * * *"] },
   // Durable cache for OpenF1 responses (completed sessions are cached for 30 days)
   "kv_namespaces": [{ "binding": "OPENF1_CACHE", "id": "834e0d749dfd4ac7a35d3d8c73094715" }],
   "observability": { "enabled": true }

@@ -11,9 +11,9 @@ export default async function Live() {
   return (
     <PageContainer>
       <LiveDashboard initial={snap} />
-      <p className="mt-6 max-w-3xl text-xs text-subtle">
-        Real-time data needs a self-hosted <a className="underline underline-offset-4 hover:text-fg" href="https://github.com/julesr0y/f1-livetiming-api" rel="noopener noreferrer">f1-livetiming-api</a> instance
-        (set <code className="num">LIVETIMING_API_URL</code>). Without it this page shows the most recent session from OpenF1 and says so. Unofficial; not affiliated with Formula 1.
+      <p className="mt-6 max-w-3xl break-words text-xs text-subtle">
+        Real-time timing comes from an <a className="underline underline-offset-4 hover:text-fg" href="https://github.com/julesr0y/f1-livetiming-api" rel="noopener noreferrer">f1-livetiming-api</a> instance
+        connected to F1&apos;s live feed. If it can&apos;t be reached, this page shows the most recent session from OpenF1 and says so. Unofficial; not affiliated with Formula 1.
       </p>
     </PageContainer>
   );

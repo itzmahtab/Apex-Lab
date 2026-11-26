@@ -142,7 +142,9 @@ testing phase, as requested.
 ## 11. Rights and monetization rules
 
 -   Verify data rights before public commercial use.
--   Do not use unlicensed F1 logos, photos, video, or broadcast clips.
+-   Do not use unlicensed F1 logos, video, or broadcast clips. Exception, by owner
+    decision: official car and driver images hot-linked from F1's media CDN
+    (never committed to the repo). See `docs/data-rights.md`.
 -   Do not imply official affiliation.
 -   A disclaimer does not replace permission.
 -   Do not enable ads until content quality, policy compliance, privacy,

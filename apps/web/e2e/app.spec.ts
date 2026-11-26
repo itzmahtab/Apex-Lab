@@ -65,13 +65,31 @@ test.describe("API", () => {
 test.describe("season hub", () => {
   test("home renders the globe hero and degrades gracefully offline", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("one live planet");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("One planet");
     await expect(page.getByRole("navigation", { name: "Rounds" })).toBeVisible();
     await expect(page.getByText("Live season data (calendar, results and standings) is unavailable")).toBeVisible();
     // picking a round from the accessible list updates the detail card with a live local clock
     await page.getByRole("navigation", { name: "Rounds" }).getByRole("button").filter({ hasText: "Monte Carlo" }).click();
     await expect(page.getByRole("heading", { level: 2, name: "Monte Carlo" })).toBeVisible();
     await expect(page.getByText(/UTC\+[12]/).first()).toBeVisible();
+  });
+
+  test("background music toggles from the sound button", async ({ page }) => {
+    await page.goto("/");
+    const btn = page.getByRole("button", { name: "Play background music" });
+    await expect(btn).toHaveAttribute("aria-pressed", "false");
+    await btn.click();
+    await expect(page.getByRole("button", { name: "Mute background music" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Mute background music" }).click();
+    await expect(page.getByRole("button", { name: "Play background music" })).toBeVisible();
+  });
+
+  test("small screens get a menu instead of the inline nav", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "mobile only");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menu" }).click();
+    await page.locator("#mobile-nav").getByRole("link", { name: /Live/ }).click();
+    await expect(page).toHaveURL(/\/live$/);
   });
 
   test("live dashboard explains when no timing is available", async ({ page }) => {

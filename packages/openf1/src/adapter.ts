@@ -204,7 +204,9 @@ export class OpenF1Repository {
 
   /** The meeting (Grand Prix weekend) in `year` whose dates contain `isoDate` (a race day), if OpenF1 has it. */
   async findMeeting(year: number, isoDate: string): Promise<Meeting | null> {
-    const rows = await this.c.list("meetings", { year }, meetingSchema, year < new Date().getUTCFullYear() ? 30 * DAY : 3600);
+    // `circuit_key>0` matches every meeting but gives a distinct cache key: older cache entries for
+    // `meetings?year=` were stored with a schema that stripped circuit_key.
+    const rows = await this.c.list("meetings", { year, "circuit_key>": 0 }, meetingSchema, year < new Date().getUTCFullYear() ? 30 * DAY : 3600);
     const t = Date.parse(isoDate);
     return rows.find((m) => !m.is_cancelled && m.date_start && m.date_end
       && Date.parse(m.date_start) - DAY * 1000 <= t && t <= Date.parse(m.date_end) + DAY * 1000) ?? null;

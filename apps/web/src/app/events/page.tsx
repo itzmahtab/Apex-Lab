@@ -29,7 +29,7 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{year} calendar</h1>
           <p className="mt-1 text-muted">Pick a weekend to see its sessions, leaderboards and tyre strategies.</p>
         </div>
-        <nav aria-label="Season" className="flex flex-wrap gap-1 rounded-xl border border-border bg-surface/80 p-1">
+        <nav aria-label="Season" className="flex flex-wrap gap-1 rounded-lg border border-border bg-surface/80 p-1">
           {years.map((yy) => (
             <Link key={yy} href={`/events?year=${yy}`} aria-current={yy === year ? "page" : undefined}
               className={`rounded-lg px-3 py-1.5 text-sm num ${yy === year ? "bg-elevated text-fg" : "text-muted hover:text-fg"}`}>{yy}</Link>
@@ -44,7 +44,7 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
             const live = !done && e.startDate ? Date.parse(e.startDate) <= now : false;
             return (
               <li key={e.key}>
-                <Link href={`/events/${e.key}`} className="group flex h-full flex-col rounded-2xl border border-border bg-surface/80 p-5 transition-all hover:-translate-y-0.5 hover:border-border-strong">
+                <Link href={`/events/${e.key}`} className="group flex h-full flex-col rounded-lg border border-border bg-surface/80 p-5 transition-all hover:-translate-y-0.5 hover:border-border-strong">
                   <div className="flex items-center justify-between text-xs text-subtle">
                     <span className="num">{r ? `ROUND ${String(r).padStart(2, "0")}` : "TESTING"}</span>
                     {live ? <Badge tone="live">This weekend</Badge> : !done ? <Badge>Upcoming</Badge> : null}
