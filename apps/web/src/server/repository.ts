@@ -123,6 +123,23 @@ async function openF1(): Promise<OpenF1Repository> {
   return new OpenF1Repository(new OpenF1Client({ cache: new LayeredCache([memory, durable]) }));
 }
 
+/** Direct access to the OpenF1 adapter, for season-hub data that sits outside the Repository interface. */
+export const openF1Repository = openF1;
+
+/**
+ * Jolpica (the community successor to the Ergast API): calendar, classifications and standings.
+ * Shares the cache layers with OpenF1. Create one client per page render and reuse it, so its
+ * request queue keeps calls spaced inside Jolpica's limits (4 req/s burst, 500 req/h).
+ */
+let jolpica: OpenF1Client | undefined;
+export async function jolpicaClient(): Promise<OpenF1Client> {
+  const opts = { baseUrl: "https://api.jolpi.ca/ergast/f1", minIntervalMs: 400, notFoundAsEmpty: false, timeoutMs: 10000, retries: 4, retryStatuses: [403],
+    userAgent: "ApexLab/1.0 (+https://github.com/itzmahtab/apex-lab)" };
+  const durable = (await kvCache()) ?? (await fsCache());
+  if (!durable) return (jolpica ??= new OpenF1Client({ ...opts, cache: memory }));
+  return new OpenF1Client({ ...opts, cache: new LayeredCache([memory, durable]) });
+}
+
 /** Converts upstream failures into a stable, user-safe error. */
 async function upstream<T>(fn: () => Promise<T>): Promise<T> {
   try {

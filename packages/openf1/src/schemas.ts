@@ -11,6 +11,8 @@ export const meetingSchema = z.object({
   country_name: z.string().nullable().optional(),
   country_code: z.string().nullable().optional(),
   circuit_short_name: z.string().nullable().optional(),
+  circuit_key: z.number().int().nullable().optional(),
+  gmt_offset: z.string().nullable().optional(),
   date_start: z.string().nullable().optional(),
   date_end: z.string().nullable().optional(),
   year: z.number().int(),
@@ -79,5 +81,19 @@ export const carDataSchema = z.object({
 });
 export type OF1CarData = z.infer<typeof carDataSchema>;
 
-export const locationSchema = z.object({ date: z.string(), x: num, y: num });
+export const locationSchema = z.object({ date: z.string(), x: num, y: num, z: num.optional() });
+
+/** Classified result of a session. `duration` is a lap time (practice), Q1/Q2/Q3 times (qualifying) or race time. */
+export const sessionResultSchema = z.object({
+  position: z.number().int().nullable(),
+  driver_number: z.number().int(),
+  number_of_laps: z.number().int().nullable().optional(),
+  points: num.optional(),
+  dnf: z.boolean().nullable().optional(),
+  dns: z.boolean().nullable().optional(),
+  dsq: z.boolean().nullable().optional(),
+  duration: z.union([z.number(), z.array(z.number().nullable())]).nullable().optional(),
+  gap_to_leader: z.union([z.number(), z.string(), z.array(z.union([z.number(), z.string()]).nullable())]).nullable().optional(),
+});
+export type OF1SessionResult = z.infer<typeof sessionResultSchema>;
 export type OF1Location = z.infer<typeof locationSchema>;

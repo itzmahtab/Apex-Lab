@@ -7,7 +7,14 @@ export const PageContainer = ({ children, className }: { children: ReactNode; cl
   <main id="main" className={cn("mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-8 flex-1", className)}>{children}</main>
 );
 
+/** Same width and gutters as PageContainer, without the <main> landmark (for pages with several bands). */
+export const Container = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <div className={cn("mx-auto w-full max-w-[1280px] px-4 sm:px-6", className)}>{children}</div>
+);
+
 const NAV = [
+  { href: "/", label: "Season" },
+  { href: "/live", label: "Live" },
   { href: "/compare", label: "Compare" },
   { href: "/events", label: "Calendar" },
   { href: "/methodology", label: "Methodology" },
@@ -45,7 +52,7 @@ export function AppFooter() {
           <p className="text-subtle">Timing and telemetry from <a className="underline underline-offset-4 hover:text-fg" href="https://openf1.org" rel="noopener noreferrer">OpenF1</a>, an unofficial community API.</p>
         </div>
         <nav aria-label="Footer"><ul className="grid grid-cols-2 gap-x-8 gap-y-2">
-          {[["/compare", "Compare"], ["/events", "Calendar"], ["/methodology", "Data & methodology"], ["/about", "About"], ["/privacy", "Privacy"], ["/terms", "Terms"]].map(([h, l]) =>
+          {[["/", "Season"], ["/live", "Live timing"], ["/compare", "Compare"], ["/events", "Calendar"], ["/methodology", "Data & methodology"], ["/about", "About"], ["/privacy", "Privacy"], ["/terms", "Terms"]].map(([h, l]) =>
             <li key={h}><Link className="hover:text-fg" href={h!}>{l}</Link></li>)}
         </ul></nav>
       </div>

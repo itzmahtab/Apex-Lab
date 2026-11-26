@@ -5,7 +5,7 @@ import {
 import { normalizeLap } from "@apexlab/analytics";
 import { OpenF1Client } from "./client";
 import {
-  carDataSchema, driverSchema, lapSchema, locationSchema, meetingSchema, sessionSchema, stintSchema,
+  carDataSchema, driverSchema, lapSchema, locationSchema, meetingSchema, sessionResultSchema, sessionSchema, stintSchema,
   type Meeting, type OF1Driver, type OF1Lap, type OF1Session, type OF1Stint,
 } from "./schemas";
 
@@ -193,4 +193,111 @@ export class OpenF1Repository {
       track: track.length >= 10 ? track : undefined,
     };
   }
+
+  /** Drivers (with current team colours) of the most recent session OpenF1 knows about. */
+  async latestDrivers() {
+    return toDrivers(await this.c.list("drivers", { session_key: "latest" }, driverSchema, 6 * 3600));
+  }
+
+  /** Raw access for endpoints without a dedicated adapter method (live/last-session dashboard). */
+  get client(): OpenF1Client { return this.c; }
+
+  /** The meeting (Grand Prix weekend) in `year` whose dates contain `isoDate` (a race day), if OpenF1 has it. */
+  async findMeeting(year: number, isoDate: string): Promise<Meeting | null> {
+    const rows = await this.c.list("meetings", { year }, meetingSchema, year < new Date().getUTCFullYear() ? 30 * DAY : 3600);
+    const t = Date.parse(isoDate);
+    return rows.find((m) => !m.is_cancelled && m.date_start && m.date_end
+      && Date.parse(m.date_start) - DAY * 1000 <= t && t <= Date.parse(m.date_end) + DAY * 1000) ?? null;
+  }
+
+  /** Every session of a weekend with its classification (empty for sessions not yet run). */
+  async getWeekendResults(meetingKey: number): Promise<WeekendSession[]> {
+    const sessions = (await this.c.list("sessions", { meeting_key: meetingKey }, sessionSchema, 600))
+      .filter((s) => !s.is_cancelled)
+      .sort((a, b) => (a.date_start ?? "").localeCompare(b.date_start ?? ""));
+    return Promise.all(sessions.map(async (s) => {
+      const summary = toSession(s);
+      if (summary.status === "upcoming") return { ...summary, results: [] };
+      const ttl = ttlFor(s.date_end);
+      const [rows, drivers] = await Promise.all([
+        this.c.list("session_result", { session_key: s.session_key }, sessionResultSchema, ttl),
+        this.c.list("drivers", { session_key: s.session_key }, driverSchema, ttl),
+      ]);
+      const byNum = new Map(toDrivers(drivers).map((d) => [d.number, d]));
+      const results: WeekendResult[] = rows
+        .slice()
+        .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+        .map((r) => {
+          const d = byNum.get(r.driver_number);
+          const dur = r.duration;
+          const best = Array.isArray(dur) ? [...dur].reverse().find((x) => x != null) ?? null : dur ?? null;
+          const gap = Array.isArray(r.gap_to_leader) ? [...r.gap_to_leader].reverse().find((x) => x != null) ?? null : r.gap_to_leader ?? null;
+          return {
+            position: r.position, number: r.driver_number,
+            abbreviation: d?.abbreviation ?? `#${r.driver_number}`, name: d?.displayName ?? `Car ${r.driver_number}`,
+            team: d?.teamName ?? null, teamColour: d?.teamColour ?? null,
+            laps: r.number_of_laps ?? null, timeS: best, gap: gap == null ? null : String(gap),
+            segments: Array.isArray(dur) ? dur : null,
+            status: r.dsq ? "DSQ" : r.dns ? "DNS" : r.dnf ? "DNF" : null,
+          };
+        });
+      return { ...summary, results };
+    }));
+  }
+
+  /**
+   * Circuit geometry for a 3D view: the fastest lap of the most recent completed qualifying (or race)
+   * at this circuit, as timed x/y/z car positions. OpenF1 positions are in decimetres-ish track units.
+   */
+  async getCircuitTrack(circuitKey: number): Promise<CircuitTrack | null> {
+    for (const name of ["Qualifying", "Race"]) {
+      const sessions = (await this.c.list("sessions", { circuit_key: circuitKey, session_name: name }, sessionSchema, DAY))
+        .filter((s) => !s.is_cancelled && s.year >= OPENF1_FIRST_SEASON && sessionStatus(s.date_start, s.date_end) === "completed")
+        .sort((a, b) => (b.date_start ?? "").localeCompare(a.date_start ?? ""));
+      for (const s of sessions.slice(0, 2)) {
+        const ttl = ttlFor(s.date_end);
+        const laps = (await this.c.list("laps", { session_key: s.session_key }, lapSchema, ttl))
+          .filter((l) => l.lap_duration != null && l.date_start != null && !l.is_pit_out_lap)
+          .sort((a, b) => a.lap_duration! - b.lap_duration!);
+        const lap = laps[0];
+        if (!lap) continue;
+        const t0 = Date.parse(lap.date_start!), dur = lap.lap_duration!;
+        const from = new Date(t0 - 1000).toISOString(), to = new Date(t0 + dur * 1000 + 1000).toISOString();
+        const [loc, drivers] = await Promise.all([
+          this.c.list("location", { session_key: s.session_key, driver_number: lap.driver_number, "date>": from, "date<": to }, locationSchema, ttl),
+          this.c.list("drivers", { session_key: s.session_key }, driverSchema, ttl),
+        ]);
+        const points = loc
+          .filter((p) => p.x != null && p.y != null && !(p.x === 0 && p.y === 0))
+          .map((p) => ({ t: (Date.parse(p.date) - t0) / 1000, x: p.x!, y: p.y!, z: p.z ?? 0 }))
+          .filter((p) => p.t >= 0 && p.t <= dur);
+        if (points.length < 30) continue;
+        const d = toDrivers(drivers).find((x) => x.number === lap.driver_number);
+        return {
+          year: s.year, sessionName: s.session_name, sessionKey: String(s.session_key), lapTimeS: dur,
+          driver: d?.abbreviation ?? `#${lap.driver_number}`, driverName: d?.displayName ?? null, teamColour: d?.teamColour ?? null,
+          points,
+        };
+      }
+    }
+    return null;
+  }
+}
+
+export interface WeekendResult {
+  position: number | null; number: number; abbreviation: string; name: string;
+  team: string | null; teamColour: string | null;
+  laps: number | null;
+  /** Best lap (practice / last qualifying segment reached) or total race time, seconds. */
+  timeS: number | null;
+  gap: string | null;
+  /** Q1/Q2/Q3 times for qualifying-type sessions. */
+  segments: (number | null)[] | null;
+  status: "DNF" | "DNS" | "DSQ" | null;
+}
+export type WeekendSession = SessionSummary & { results: WeekendResult[] };
+export interface CircuitTrack {
+  year: number; sessionName: string; sessionKey: string; lapTimeS: number;
+  driver: string; driverName: string | null; teamColour: string | null;
+  points: { t: number; x: number; y: number; z: number }[];
 }

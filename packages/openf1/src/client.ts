@@ -54,6 +54,12 @@ export interface ClientOptions {
   timeoutMs?: number;
   /** Longest single wait honoured for a 429 Retry-After; beyond this we fail fast instead of hanging a page. */
   maxRetryWaitMs?: number;
+  /** Treat HTTP 404 as an empty list (OpenF1's "no results"). Default true. */
+  notFoundAsEmpty?: boolean;
+  /** Extra statuses to retry with backoff, e.g. 403 from an API whose edge sheds bursts with 403. */
+  retryStatuses?: number[];
+  /** Identifies the client to the upstream API (some edges reject library-default agents). */
+  userAgent?: string;
 }
 
 type Params = Record<string, string | number | undefined>;
@@ -73,6 +79,9 @@ export class OpenF1Client {
   private retries: number;
   private timeoutMs: number;
   private maxRetryWait: number;
+  private notFoundAsEmpty: boolean;
+  private retryStatuses: Set<number>;
+  private headers: Record<string, string>;
   private queue: Promise<unknown> = Promise.resolve();
   private last = 0;
   private inflight = new Map<string, Promise<unknown>>();
@@ -85,6 +94,9 @@ export class OpenF1Client {
     this.retries = o.retries ?? 3;
     this.timeoutMs = o.timeoutMs ?? 15000;
     this.maxRetryWait = o.maxRetryWaitMs ?? 4000;
+    this.notFoundAsEmpty = o.notFoundAsEmpty ?? true;
+    this.retryStatuses = new Set(o.retryStatuses ?? []);
+    this.headers = { accept: "application/json", ...(o.userAgent ? { "user-agent": o.userAgent } : {}) };
   }
 
   /** Builds the URL. OpenF1 filter operators (`date>=`) are part of the key, so keys are encoded but `>=`/`<` kept. */
@@ -105,22 +117,27 @@ export class OpenF1Client {
    * served (stale-if-error), so a rate-limited or offline upstream degrades to "slightly old" not "broken".
    */
   async list<T>(path: string, params: Params, schema: z.ZodType<T>, ttlSeconds: number): Promise<T[]> {
+    return this.get(path, params, z.array(schema), ttlSeconds);
+  }
+
+  /** Cached GET of any JSON shape (same caching, retry and stale-if-error rules as `list`). */
+  async get<T>(path: string, params: Params, schema: z.ZodType<T>, ttlSeconds: number): Promise<T> {
     const url = this.url(path, params);
     const hit = await this.cache.get(url).catch(() => null);
-    let stale: T[] | null = null;
+    let stale: T | null = null;
     if (hit != null) {
       const entry = readEntry(hit);
-      const parsed = entry ? z.array(schema).safeParse(entry.d) : null;
+      const parsed = entry ? schema.safeParse(entry.d) : null;
       if (entry && parsed?.success) {
         if (entry.f > Date.now()) return parsed.data;
         stale = parsed.data;
       }
     }
-    const pending = this.inflight.get(url) as Promise<T[]> | undefined;
+    const pending = this.inflight.get(url) as Promise<T> | undefined;
     if (pending) return pending;
     const p = this.schedule(() => this.fetchWithRetry(url)).then(async (body) => {
-      const parsed = z.array(schema).safeParse(body);
-      if (!parsed.success) throw new UpstreamError(`Unexpected response shape from OpenF1 /${path}`);
+      const parsed = schema.safeParse(body);
+      if (!parsed.success) throw new UpstreamError(`Unexpected response shape from ${this.base}/${path}`);
       const entry = JSON.stringify({ d: parsed.data, f: Date.now() + ttlSeconds * 1000 });
       await this.cache.put(url, entry, Math.max(ttlSeconds, STALE_KEEP_S)).catch(() => undefined);
       return parsed.data;
@@ -148,11 +165,12 @@ export class OpenF1Client {
       try {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), this.timeoutMs);
-        const res = await this.fetchImpl(url, { headers: { accept: "application/json" }, signal: ctrl.signal }).finally(() => clearTimeout(timer));
-        if (res.status === 404) return []; // OpenF1 answers "no results" with 404
+        const res = await this.fetchImpl(url, { headers: this.headers, signal: ctrl.signal }).finally(() => clearTimeout(timer));
+        if (res.status === 404 && this.notFoundAsEmpty) return []; // OpenF1 answers "no results" with 404
         if (res.ok) return await res.json();
-        if (res.status !== 429 && res.status < 500) throw new UpstreamError(`OpenF1 responded ${res.status}`, res.status);
-        lastErr = new UpstreamError(`OpenF1 responded ${res.status}`, res.status);
+        const retryable = res.status === 429 || res.status >= 500 || this.retryStatuses.has(res.status);
+        if (!retryable) throw new UpstreamError(`${this.base} responded ${res.status}`, res.status);
+        lastErr = new UpstreamError(`${this.base} responded ${res.status}`, res.status === 429 ? 429 : 503);
         const ra = Number(res.headers.get("retry-after")) * 1000;
         const wait = Number.isFinite(ra) && ra > 0 ? ra : 600 * 2 ** attempt;
         if (wait > this.maxRetryWait) throw new UpstreamError("OpenF1 rate limit reached", 429);
