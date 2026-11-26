@@ -96,6 +96,10 @@ h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.03em; }
 @keyframes stamp-in { from { opacity: 0; transform: translateY(40%) scaleY(1.25); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
 .stamp-in { display: block; animation: stamp-in 460ms steps(4, end) both; animation-delay: calc(var(--i, 0) * 140ms); }
 
+/* car photo slides in hard from the right when the team changes */
+@keyframes car-in { from { opacity: 0; transform: translateX(22%) skewX(-8deg); } to { opacity: 1; transform: none; } }
+.car-in { animation: car-in 380ms steps(4, end) both; }
+
 /* ticker */
 @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 .marquee { animation: marquee 60s linear infinite; }
@@ -127,7 +131,7 @@ select {
 .draw-line { stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: dash 2.4s ease-out forwards; }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .marquee, .rise, .eq-bar, .stamp-in, .reveal-in { animation: none; }
+  .skeleton, .marquee, .rise, .eq-bar, .stamp-in, .reveal-in, .car-in { animation: none; }
   .reveal-pre { opacity: 1; transform: none; }
   .draw-line { animation: none; stroke-dashoffset: 0; }
   .distort:hover, .distort:focus-visible { transform: none; }

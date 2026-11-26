@@ -4,8 +4,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { buildCar } from "@/lib/car-model";
 
-export interface ShowroomTeam { teamId: string; name: string; colour: string; position: number; points: number }
-export interface ShowroomDriver { id: string; code: string; name: string; number: string | null; teamId: string; team: string; colour: string; position: number; points: number; wins: number; nationality: string | null }
+export interface ShowroomTeam { teamId: string; name: string; colour: string; position: number; points: number; car: string }
+export interface ShowroomDriver { id: string; code: string; name: string; number: string | null; teamId: string; team: string; colour: string; position: number; points: number; wins: number; nationality: string | null; portrait: string }
 
 /** 3D turntable: an original open-wheeler, recoloured live to the selected team. */
 function Turntable({ colour }: { colour: string }) {
@@ -106,27 +106,31 @@ function Turntable({ colour }: { colour: string }) {
 function DriverCard({ d, big = false, onPick }: { d: ShowroomDriver; big?: boolean; onPick?: () => void }) {
   const Tag = onPick ? "button" : "div";
   return (
-    <Tag {...(onPick ? { type: "button" as const, onClick: onPick } : {})}
-      className={`distort group relative flex w-full flex-col overflow-hidden rounded-lg border-2 border-border-strong bg-surface text-left ${big ? "min-h-[13rem] p-5" : "min-h-[8.5rem] p-3"}`}
+    <Tag {...(onPick ? { type: "button" as const, onClick: onPick, "aria-label": `${d.name}, ${d.team}: show car` } : {})}
+      className={`distort group relative flex w-full flex-col overflow-hidden rounded-lg border-2 border-border-strong bg-surface text-left ${big ? "min-h-[15rem] p-5" : "min-h-[11rem] p-3"}`}
       style={{ boxShadow: `5px 5px 0 ${d.colour}` }}>
-      {/* giant outlined race number in team colour: the card's "portrait" */}
+      {/* team-colour slab + giant outlined race number behind the portrait */}
+      <span className="pointer-events-none absolute bottom-0 right-0 h-[62%] w-[58%] opacity-25" style={{ background: d.colour }} aria-hidden />
       <span className={`pointer-events-none absolute -right-1 leading-[0.8] ${big ? "-top-2 text-[9rem]" : "-top-1 text-[5.5rem]"}`}
         style={{ color: "transparent", WebkitTextStroke: `2px ${d.colour}` }} aria-hidden>{d.number ?? "–"}</span>
+      <img src={d.portrait} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
+        className={`pointer-events-none absolute bottom-0 right-0 object-contain object-bottom transition-transform duration-300 ease-out group-hover:scale-105 ${big ? "h-[92%] max-w-[62%]" : "h-[88%] max-w-[58%]"}`}
+        onError={(e) => { e.currentTarget.style.display = "none"; }} />
       <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: d.colour }} aria-hidden />
-      <span className="mono relative text-[11px] text-subtle">P{String(d.position).padStart(2, "0")}{d.nationality ? ` / ${d.nationality.toUpperCase()}` : ""}</span>
-      <span className={`relative mt-auto uppercase leading-none ${big ? "text-4xl" : "text-2xl"}`}>{d.code}</span>
-      <span className={`relative uppercase leading-tight ${big ? "mt-1 text-base" : "text-[11px]"}`}>{d.name}</span>
-      <span className="mono relative mt-1 flex gap-3 text-[11px] text-muted">
+      <span className="mono relative z-10 text-[11px] text-subtle">P{String(d.position).padStart(2, "0")}{d.nationality ? <><br />{d.nationality.toUpperCase()}</> : null}</span>
+      <span className={`relative z-10 mt-auto max-w-[60%] uppercase leading-none ${big ? "text-4xl" : "text-2xl"}`}>{d.code}</span>
+      <span className={`relative z-10 max-w-[62%] uppercase leading-tight ${big ? "mt-1 text-sm" : "text-[11px]"}`}>{d.name}</span>
+      <span className="mono relative z-10 mt-1 flex max-w-[62%] flex-wrap gap-x-3 text-[11px] text-muted">
         <span><span className="text-fg">{d.points}</span> PTS</span>
-        {d.wins > 0 && <span><span className="text-fg">{d.wins}</span> WINS</span>}
-        {!big && <span className="truncate">{d.team}</span>}
+        {d.wins > 0 && <span><span className="text-fg">{d.wins}</span> W</span>}
       </span>
     </Tag>
   );
 }
 
-export function CarShowroom({ teams, drivers }: { teams: ShowroomTeam[]; drivers: ShowroomDriver[] }) {
+export function CarShowroom({ season, teams, drivers }: { season: number; teams: ShowroomTeam[]; drivers: ShowroomDriver[] }) {
   const [teamId, setTeamId] = useState(teams[0]?.teamId ?? "");
+  const [view, setView] = useState<"photo" | "3d">("photo");
   const team = teams.find((t) => t.teamId === teamId) ?? teams[0];
   if (!team) return null;
   const pair = drivers.filter((d) => d.teamId === team.teamId).slice(0, 2);
@@ -151,20 +155,34 @@ export function CarShowroom({ teams, drivers }: { teams: ShowroomTeam[]; drivers
           </div>
         </div>
 
-        {/* turntable */}
+        {/* official car render, or the 3D turntable */}
         <div className="order-1 lg:order-2 lg:col-span-6">
-          <div id="showroom" className="relative h-[320px] overflow-hidden rounded-lg border-2 border-border-strong bg-[radial-gradient(ellipse_at_50%_65%,#232323,#0e0e0e_70%)] sm:h-[440px]"
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex border-2 border-border text-[11px]" role="group" aria-label="View">
+              {(["photo", "3d"] as const).map((v) => (
+                <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}
+                  className={`stamp px-3 py-1 text-[10px] ${view === v ? "bg-bone text-bg" : "text-muted hover:text-fg"}`}>{v === "photo" ? "Car" : "3D"}</button>
+              ))}
+            </div>
+            <span className="mono text-[11px] text-subtle">{team.points} PTS · P{String(team.position).padStart(2, "0")}</span>
+          </div>
+          <div id="showroom" className="relative h-[300px] overflow-hidden rounded-lg border-2 border-border-strong bg-[radial-gradient(ellipse_at_50%_70%,#232323,#0e0e0e_70%)] sm:h-[420px]"
             style={{ boxShadow: `8px 8px 0 ${team.colour}` }}>
-            <Turntable colour={team.colour} />
+            {view === "photo" ? (
+              <>
+                <span className="pointer-events-none absolute -left-10 bottom-10 h-[46%] w-[120%] -rotate-3" style={{ background: team.colour, opacity: 0.85 }} aria-hidden />
+                <span className="pointer-events-none absolute right-3 top-2 text-[7rem] uppercase leading-none tracking-tighter sm:text-[10rem]"
+                  style={{ color: "transparent", WebkitTextStroke: "2px rgba(244,244,241,.18)" }} aria-hidden>{String(team.position).padStart(2, "0")}</span>
+                <img key={team.teamId} src={team.car} alt={`${team.name} ${season} car`} decoding="async" referrerPolicy="no-referrer"
+                  className="car-in absolute bottom-[8%] left-1/2 w-[112%] max-w-none -translate-x-1/2 object-contain drop-shadow-[0_18px_18px_rgba(0,0,0,.6)]" />
+              </>
+            ) : <Turntable colour={team.colour} />}
             <div className="pointer-events-none absolute left-0 top-0 border-b-2 border-r-2 border-border-strong bg-bg px-3 py-1.5">
               <div className="stamp text-[10px] text-subtle">P{String(team.position).padStart(2, "0")} constructor</div>
               <div className="text-lg uppercase leading-tight">{team.name}</div>
             </div>
-            <div className="mono pointer-events-none absolute bottom-0 right-0 border-l-2 border-t-2 border-border-strong bg-bg px-3 py-1.5 text-[11px] text-muted">
-              <span className="text-fg">{team.points}</span> PTS · DRAG TO ORBIT
-            </div>
           </div>
-          <p className="mono mt-3 text-[11px] text-subtle">GENERIC OPEN-WHEELER BUILT IN CODE, PAINTED IN THE TEAM&apos;S COLOUR. NOT A TEAM CAR OR LIVERY.</p>
+          <p className="mono mt-3 text-[11px] text-subtle">{view === "photo" ? `${season} CAR · IMAGE © FORMULA 1 / ${team.name.toUpperCase()}` : "GENERIC OPEN-WHEELER BUILT IN CODE, PAINTED IN THE TEAM'S COLOUR · DRAG TO ORBIT"}</p>
         </div>
 
         {/* the pair */}
@@ -175,7 +193,7 @@ export function CarShowroom({ teams, drivers }: { teams: ShowroomTeam[]; drivers
 
       {/* full grid */}
       <div>
-        <h3 className="stamp mb-4 text-accent">All {drivers.length} drivers · tap to load their car</h3>
+        <h3 className="stamp mb-4 text-accent">All {drivers.length} drivers · tap to see their car</h3>
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
           {drivers.map((d, i) => (
             <li key={d.id} className="rise" style={{ ["--i" as string]: Math.min(i, 14) }}>

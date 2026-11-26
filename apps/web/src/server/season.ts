@@ -4,6 +4,7 @@ import type { OpenF1Client } from "@apexlab/openf1";
 import { env } from "@/env";
 import { CIRCUITS, circuitTz, TEAM_FALLBACK } from "@/lib/circuits";
 import { teamHex } from "@/lib/colors";
+import { carImage, driverImage, driverRef } from "@/lib/f1-media";
 import { jolpicaClient, openF1Repository } from "./repository";
 
 /*
@@ -16,7 +17,7 @@ const DAY = 86400;
 const slot = z.object({ date: z.string(), time: z.string().optional() });
 const locationSchema = z.object({ lat: z.string(), long: z.string(), locality: z.string(), country: z.string() });
 const circuitSchema = z.object({ circuitId: z.string(), circuitName: z.string(), Location: locationSchema });
-const driverRef = z.object({
+const driverRefSchema = z.object({
   driverId: z.string(), permanentNumber: z.string().optional(), code: z.string().optional(),
   givenName: z.string(), familyName: z.string(), nationality: z.string().optional(),
 });
@@ -24,12 +25,12 @@ const constructorRef = z.object({ constructorId: z.string(), name: z.string() })
 const timeRef = z.object({ millis: z.string().optional(), time: z.string() }).optional();
 const resultRow = z.object({
   number: z.string().optional(), position: z.string(), positionText: z.string().optional(), points: z.string().optional(),
-  Driver: driverRef, Constructor: constructorRef, grid: z.string().optional(), laps: z.string().optional(),
+  Driver: driverRefSchema, Constructor: constructorRef, grid: z.string().optional(), laps: z.string().optional(),
   status: z.string().optional(), Time: timeRef,
   FastestLap: z.object({ rank: z.string().optional(), lap: z.string().optional(), Time: z.object({ time: z.string() }).optional() }).optional(),
 });
 const qualiRow = z.object({
-  position: z.string(), Driver: driverRef, Constructor: constructorRef,
+  position: z.string(), Driver: driverRefSchema, Constructor: constructorRef,
   Q1: z.string().optional(), Q2: z.string().optional(), Q3: z.string().optional(),
 });
 const raceSchema = z.object({
@@ -41,7 +42,7 @@ const raceSchema = z.object({
 const raceTable = z.object({ MRData: z.object({ total: z.string(), RaceTable: z.object({ season: z.string().optional(), Races: z.array(raceSchema) }) }) });
 const driverStandings = z.object({ MRData: z.object({ StandingsTable: z.object({ season: z.string().optional(), round: z.string().optional(), StandingsLists: z.array(z.object({
   round: z.string(),
-  DriverStandings: z.array(z.object({ position: z.string().optional(), positionText: z.string().optional(), points: z.string(), wins: z.string(), Driver: driverRef, Constructors: z.array(constructorRef) })),
+  DriverStandings: z.array(z.object({ position: z.string().optional(), positionText: z.string().optional(), points: z.string(), wins: z.string(), Driver: driverRefSchema, Constructors: z.array(constructorRef) })),
 })) }) }) });
 const constructorStandings = z.object({ MRData: z.object({ StandingsTable: z.object({ StandingsLists: z.array(z.object({
   round: z.string(),
@@ -53,7 +54,7 @@ type JRace = z.infer<typeof raceSchema>;
 
 export type SessionId = "fp1" | "fp2" | "fp3" | "sq" | "sprint" | "quali" | "race";
 export interface SessionSlot { id: SessionId; label: string; start: string }
-export interface DriverRef { id: string; code: string; name: string; number: string | null; team: string; teamId: string; colour: string }
+export interface DriverRef { id: string; code: string; name: string; number: string | null; team: string; teamId: string; colour: string; portrait: string }
 export interface Race {
   season: number; round: number; name: string; circuitId: string; circuitName: string;
   locality: string; country: string; lat: number; lng: number; tz: string;
@@ -62,7 +63,7 @@ export interface Race {
   podium: DriverRef[];
 }
 export interface DriverStanding extends DriverRef { position: number; points: number; wins: number; nationality: string | null }
-export interface ConstructorStanding { position: number; teamId: string; name: string; points: number; wins: number; colour: string; drivers: string[] }
+export interface ConstructorStanding { position: number; teamId: string; name: string; points: number; wins: number; colour: string; drivers: string[]; car: string }
 export interface Progression { rounds: { round: number; label: string }[]; series: { code: string; colour: string; dashed: boolean; points: number[] }[] }
 export interface SeasonData {
   season: number; races: Race[]; nextRace: Race | null; lastRace: Race | null;
@@ -101,12 +102,13 @@ async function liveColours(): Promise<Map<number, string>> {
   }
 }
 
-function makeRef(d: z.infer<typeof driverRef>, c: z.infer<typeof constructorRef>, colours: Map<number, string>): DriverRef {
+function makeRef(d: z.infer<typeof driverRefSchema>, c: z.infer<typeof constructorRef>, colours: Map<number, string>, season: number): DriverRef {
   const n = d.permanentNumber ? Number(d.permanentNumber) : NaN;
   return {
     id: d.driverId, code: d.code ?? d.familyName.slice(0, 3).toUpperCase(), name: `${d.givenName} ${d.familyName}`,
     number: d.permanentNumber ?? null, team: c.name, teamId: c.constructorId,
     colour: colours.get(n) ?? TEAM_FALLBACK[c.constructorId] ?? "#9aa4b2",
+    portrait: driverImage(season, c.constructorId, driverRef(d.givenName, d.familyName)),
   };
 }
 
@@ -155,7 +157,7 @@ export async function getSeason(seasonParam: number | "current" = "current"): Pr
       const lat = Number(r.Circuit.Location.lat), lng = Number(r.Circuit.Location.long);
       const res = resByRound.get(Number(r.round))?.Results ?? [];
       const podium = res.filter((x) => ["1", "2", "3"].includes(x.position)).sort((a, b) => Number(a.position) - Number(b.position))
-        .map((x) => makeRef(x.Driver, x.Constructor, colours));
+        .map((x) => makeRef(x.Driver, x.Constructor, colours, season));
       const firstStart = Date.parse(sessions[0]?.start ?? r.date);
       const lastEnd = sessions.length ? sessionEnd(sessions.at(-1)!) : Date.parse(r.date);
       let status: Race["status"] = podium.length || lastEnd < now ? "completed" : firstStart <= now ? "live" : "upcoming";
@@ -169,7 +171,7 @@ export async function getSeason(seasonParam: number | "current" = "current"): Pr
 
     const dl = ds?.MRData.StandingsTable.StandingsLists[0];
     const drivers: DriverStanding[] = (dl?.DriverStandings ?? []).map((d, i) => ({
-      ...makeRef(d.Driver, d.Constructors.at(-1) ?? { constructorId: "unknown", name: "—" }, colours),
+      ...makeRef(d.Driver, d.Constructors.at(-1) ?? { constructorId: "unknown", name: "—" }, colours, season),
       position: Number(d.position ?? i + 1), points: Number(d.points), wins: Number(d.wins), nationality: d.Driver.nationality ?? null,
     }));
     const cl = cs?.MRData.StandingsTable.StandingsLists[0];
@@ -180,6 +182,7 @@ export async function getSeason(seasonParam: number | "current" = "current"): Pr
         points: Number(t.points), wins: Number(t.wins),
         colour: mine[0]?.colour ?? TEAM_FALLBACK[t.Constructor.constructorId] ?? "#9aa4b2",
         drivers: mine.map((d) => d.code),
+        car: carImage(season, t.Constructor.constructorId),
       };
     });
 

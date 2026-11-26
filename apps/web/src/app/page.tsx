@@ -61,9 +61,9 @@ async function SeasonHub() {
         {s.constructors.length > 0 && s.drivers.length > 0 && (
           <Reveal><section aria-labelledby="grid-h">
             <SectionHead id="grid-h" index="04" kicker="The grid" title="Cars & drivers" />
-            <CarShowroom
-              teams={s.constructors.map((t) => ({ teamId: t.teamId, name: t.name, colour: t.colour, position: t.position, points: t.points }))}
-              drivers={s.drivers.map((d) => ({ id: d.id, code: d.code, name: d.name, number: d.number, teamId: d.teamId, team: d.team, colour: d.colour, position: d.position, points: d.points, wins: d.wins, nationality: d.nationality }))} />
+            <CarShowroom season={s.season}
+              teams={s.constructors.map((t) => ({ teamId: t.teamId, name: t.name, colour: t.colour, position: t.position, points: t.points, car: t.car }))}
+              drivers={s.drivers.map((d) => ({ id: d.id, code: d.code, name: d.name, number: d.number, teamId: d.teamId, team: d.team, colour: d.colour, position: d.position, points: d.points, wins: d.wins, nationality: d.nationality, portrait: d.portrait }))} />
           </section></Reveal>
         )}
 

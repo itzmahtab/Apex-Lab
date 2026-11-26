@@ -79,6 +79,8 @@ export default async function GrandPrix(p: Props) {
               {race.podium.map((d, i) => (
                 <li key={d.id} className={`relative overflow-hidden rounded-lg border-2 border-border-strong p-3 text-center ${i === 0 ? "bg-accent text-bg shadow-[6px_6px_0_var(--color-blood)]" : "bg-surface shadow-[4px_4px_0_var(--color-cobalt)]"}`}>
                   <div className="absolute inset-x-0 top-0 h-1" style={{ background: d.colour }} aria-hidden />
+                  <img src={d.portrait} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
+                    className="pointer-events-none mx-auto -mb-1 h-24 object-contain object-bottom sm:h-28" />
                   <div className={`stamp text-[10px] ${i === 0 ? "text-bg" : "text-subtle"}`}>P{i + 1}</div>
                   <div className="text-xl">{d.code}</div>
                   <div className={`mono truncate text-xs ${i === 0 ? "text-bg" : "text-muted"}`}>{d.team}</div>
