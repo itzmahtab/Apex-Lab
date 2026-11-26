@@ -60,6 +60,12 @@ export interface ClientOptions {
   retryStatuses?: number[];
   /** Identifies the client to the upstream API (some edges reject library-default agents). */
   userAgent?: string;
+  /**
+   * Stale-while-revalidate: return a stale cached copy immediately and refresh it in the background,
+   * instead of making the caller wait for upstream. `waitUntil` keeps that refresh alive on Workers.
+   */
+  staleWhileRevalidate?: boolean;
+  waitUntil?: (p: Promise<unknown>) => void;
 }
 
 type Params = Record<string, string | number | undefined>;
@@ -82,6 +88,8 @@ export class OpenF1Client {
   private notFoundAsEmpty: boolean;
   private retryStatuses: Set<number>;
   private headers: Record<string, string>;
+  private swr: boolean;
+  private waitUntil?: (p: Promise<unknown>) => void;
   private queue: Promise<unknown> = Promise.resolve();
   private last = 0;
   private inflight = new Map<string, Promise<unknown>>();
@@ -97,6 +105,8 @@ export class OpenF1Client {
     this.notFoundAsEmpty = o.notFoundAsEmpty ?? true;
     this.retryStatuses = new Set(o.retryStatuses ?? []);
     this.headers = { accept: "application/json", ...(o.userAgent ? { "user-agent": o.userAgent } : {}) };
+    this.swr = o.staleWhileRevalidate ?? false;
+    this.waitUntil = o.waitUntil;
   }
 
   /** Builds the URL. OpenF1 filter operators (`date>=`) are part of the key, so keys are encoded but `>=`/`<` kept. */
@@ -134,7 +144,7 @@ export class OpenF1Client {
       }
     }
     const pending = this.inflight.get(url) as Promise<T> | undefined;
-    if (pending) return pending;
+    if (pending) return stale != null && this.swr ? stale : pending;
     const p = this.schedule(() => this.fetchWithRetry(url)).then(async (body) => {
       const parsed = schema.safeParse(body);
       if (!parsed.success) throw new UpstreamError(`Unexpected response shape from ${this.base}/${path}`);
@@ -146,6 +156,11 @@ export class OpenF1Client {
       throw e;
     }).finally(() => this.inflight.delete(url));
     this.inflight.set(url, p);
+    if (stale != null && this.swr) {
+      const bg = p.catch(() => undefined); // failures keep serving the stale copy
+      this.waitUntil?.(bg);
+      return stale;
+    }
     return p;
   }
 
