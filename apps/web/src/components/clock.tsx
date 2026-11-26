@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { countdownParts, fmtOffset, isDaylight, timeIn, tzOffsetMin } from "@/lib/geo";
+import { countdownParts, fmt12, fmtOffset, isDaylight, timeIn, tzOffsetMin } from "@/lib/geo";
 
 /** Current time, ticking every `ms`. `null` until mounted, so server and client markup match. */
 export function useNow(ms = 1000): Date | null {
@@ -64,7 +64,7 @@ export function ZonedTime({ iso, tz, withDay = true }: { iso: string; tz?: strin
   return (
     <span className="num">
       {withDay && d.toLocaleDateString("en-GB", { timeZone: tz, weekday: "short", day: "numeric", month: "short" }) + " · "}
-      {d.toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit" })}
+      {fmt12(d, tz)}
     </span>
   );
 }

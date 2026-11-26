@@ -26,9 +26,12 @@ export function subsolarPoint(date: Date): { lat: number; lng: number } {
   return { lat: dec, lng };
 }
 
-/** "14:05" in a zone. */
-export const timeIn = (tz: string, at: Date, seconds = false) =>
-  at.toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", ...(seconds ? { second: "2-digit" } : {}) });
+/** 12-hour clock time, e.g. "2:05 PM" or "2:05:09 PM". `tz` omitted = the viewer's zone. */
+export const fmt12 = (at: Date, tz?: string, seconds = false) =>
+  at.toLocaleTimeString("en-US", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true, ...(seconds ? { second: "2-digit" } : {}) });
+
+/** "2:05 PM" in a zone. */
+export const timeIn = (tz: string, at: Date, seconds = false) => fmt12(at, tz, seconds);
 
 /** Offset of a zone from UTC in minutes at a given moment. */
 export function tzOffsetMin(tz: string, at: Date): number {
@@ -54,3 +57,16 @@ export function countdownParts(ms: number) {
   const t = Math.max(0, Math.floor(ms / 1000));
   return { d: Math.floor(t / 86400), h: Math.floor((t % 86400) / 3600), m: Math.floor((t % 3600) / 60), s: t % 60 };
 }
+
+/** Feed dates are local wall-clock time plus a GmtOffset like "-08:00:00"; convert to ISO UTC. */
+export function feedTimeToUtc(local: string, offset: string): string | null {
+  if (!local) return null;
+  if (/[zZ]|[+-]\d\d:\d\d$/.test(local)) return local;
+  const m = /^([+-])?(\d{1,2}):(\d{2})/.exec(offset);
+  const t = Date.parse(`${local}Z`);
+  if (Number.isNaN(t)) return null;
+  if (!m) return new Date(t).toISOString();
+  const mins = (Number(m[2]) * 60 + Number(m[3])) * (m[1] === "-" ? -1 : 1);
+  return new Date(t - mins * 60_000).toISOString();
+}
+

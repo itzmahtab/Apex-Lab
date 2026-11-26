@@ -83,6 +83,19 @@ h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.03em; }
 /* stamped label */
 .stamp { font-family: var(--font-mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; }
 
+/* equaliser bars on the sound button */
+@keyframes eq { 0%, 100% { transform: scaleY(0.3) } 50% { transform: scaleY(1) } }
+.eq-bar { height: 16px; transform-origin: bottom; animation: eq 0.7s ease-in-out infinite; }
+
+/* scroll reveal: hard stepped slam from the side */
+.reveal-pre { opacity: 0; transform: translateX(-28px) skewX(-3deg); }
+.reveal-in { animation: slam 520ms steps(5, end) both; }
+@keyframes slam { from { opacity: 0; transform: translateX(-28px) skewX(-3deg); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
+
+/* headline lines stamp in one after another */
+@keyframes stamp-in { from { opacity: 0; transform: translateY(40%) scaleY(1.25); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
+.stamp-in { display: block; animation: stamp-in 460ms steps(4, end) both; animation-delay: calc(var(--i, 0) * 140ms); }
+
 /* ticker */
 @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 .marquee { animation: marquee 60s linear infinite; }
@@ -114,7 +127,8 @@ select {
 .draw-line { stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: dash 2.4s ease-out forwards; }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .marquee, .rise { animation: none; }
+  .skeleton, .marquee, .rise, .eq-bar, .stamp-in, .reveal-in { animation: none; }
+  .reveal-pre { opacity: 1; transform: none; }
   .draw-line { animation: none; stroke-dashoffset: 0; }
   .distort:hover, .distort:focus-visible { transform: none; }
   * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }

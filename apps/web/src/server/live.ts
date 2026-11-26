@@ -3,6 +3,7 @@ import { z } from "zod";
 import { driverSchema, sessionResultSchema, sessionSchema, stintSchema } from "@apexlab/openf1";
 import { env } from "@/env";
 import { teamHex } from "@/lib/colors";
+import { feedTimeToUtc as toUtc } from "@/lib/geo";
 import { openF1Repository } from "./repository";
 
 /*
@@ -16,11 +17,14 @@ export interface LiveRow {
   position: number | null; number: string; code: string; name: string; team: string; colour: string;
   gap: string; interval: string; best: string; bestIsOverall: boolean; last: string;
   sectors: { value: string; overall: boolean; personal: boolean }[];
-  inPit: boolean; retired: boolean; pits: number | null;
+  inPit: boolean; retired: boolean; pits: number | null; topSpeed: number | null; laps: number | null;
   tyre: { compound: string; laps: number | null; fresh: boolean | null } | null;
 }
 export interface LiveSnapshot {
-  mode: "live" | "last-session";
+  /** live: session running on the live feed · feed: live feed, session not running · last-session: OpenF1 fallback */
+  mode: "live" | "feed" | "last-session";
+  /** F1 SessionStatus when known: Inactive, Started, Aborted, Finished, Finalised, Ends */
+  status: string | null;
   source: string;
   connected: boolean;
   session: { meeting: string; name: string; type: string; start: string | null; end: string | null };
@@ -59,7 +63,8 @@ async function fromLiveTiming(base: string): Promise<LiveSnapshot> {
   const st = isObj(status) ? status : {};
   const lines = isObj(standings) && isObj(standings.Lines) ? standings.Lines : {};
   const tyreLines = isObj(tyres) && isObj(tyres.Lines) ? tyres.Lines : {};
-  const rows: LiveRow[] = Object.entries(lines).map(([num, raw]) => {
+  // the feed mixes "_kf" (key-frame) markers into its objects: keep only racing-number keys
+  const rows: LiveRow[] = Object.entries(lines).filter(([num]) => /^\d+$/.test(num)).map(([num, raw]) => {
     const l = isObj(raw) ? raw : {};
     const best = isObj(l.BestLapTime) ? l.BestLapTime : {};
     const tl = isObj(tyreLines[num]) ? (tyreLines[num] as Obj) : {};
@@ -72,6 +77,7 @@ async function fromLiveTiming(base: string): Promise<LiveSnapshot> {
       best: str(best.Value), bestIsOverall: best.OverallFastest === true, last: str(l.LastLapTime),
       sectors: list(l.Sectors).map((x) => { const o = isObj(x) ? x : {}; return { value: str(o.Value), overall: o.OverallFastest === true, personal: o.PersonalFastest === true }; }),
       inPit: l.InPit === true, retired: l.Retired === true || l.Stopped === true, pits: numOrNull(l.NumberOfPitStops),
+      topSpeed: isObj(l.Speeds) ? numOrNull((l.Speeds as Obj).ST) : null, laps: numOrNull(l.NumberOfLaps),
       tyre: s ? { compound: str(s.Compound).toUpperCase(), laps: numOrNull(s.TotalLaps), fresh: typeof s.New === "boolean" ? s.New : s.New === "true" ? true : s.New === "false" ? false : null } : null,
     };
   }).sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
@@ -81,9 +87,11 @@ async function fromLiveTiming(base: string): Promise<LiveSnapshot> {
   const lc = isObj(lapCount) && isObj(lapCount.LapCount) ? lapCount.LapCount : {};
   const w = isObj(weather) && isObj(weather.Weather) ? weather.Weather : null;
   const msgs = isObj(rc) ? list(rc.RaceControl) : [];
+  const sessionStatus = str(sess.SessionStatus) || null;
+  const running = sessionStatus === "Started" || sessionStatus === "Aborted";
   return {
-    mode: "live", source: "F1 live timing (self-hosted f1-livetiming-api)", connected: st.isConnected === true,
-    session: { meeting: str(meeting.Name) || "Live session", name: str(sess.Name) || "Session", type: str(sess.Type), start: str(sess.StartDate) || null, end: str(sess.EndDate) || null },
+    mode: running ? "live" : "feed", status: sessionStatus, source: "F1 live timing (f1-livetiming-api)", connected: st.isConnected === true,
+    session: { meeting: str(meeting.Name) || "Live session", name: str(sess.Name) || "Session", type: str(sess.Type), start: toUtc(str(sess.StartDate), str(sess.GmtOffset)), end: toUtc(str(sess.EndDate), str(sess.GmtOffset)) },
     lap: numOrNull(lc.CurrentLap) != null ? { current: numOrNull(lc.CurrentLap)!, total: numOrNull(lc.TotalLaps) } : null,
     rows,
     weather: w ? { air: numOrNull(w.AirTemp), track: numOrNull(w.TrackTemp), humidity: numOrNull(w.Humidity), wind: numOrNull(w.WindSpeed), rain: str(w.Rainfall) === "1" } : null,
@@ -127,14 +135,14 @@ async function fromOpenF1(): Promise<LiveSnapshot> {
       team: d?.team_name ?? "", colour: teamHex(d?.team_colour, "#9aa4b2"),
       gap: gapRaw == null || gapRaw === 0 ? (r.position === 1 ? (isRace ? "Leader" : "") : "") : typeof gapRaw === "number" ? `+${gapRaw.toFixed(3)}` : String(gapRaw),
       interval: "", best: isRace ? "" : fmt(dur), bestIsOverall: !isRace && dur === bestOverall, last: "",
-      sectors: [], inPit: false, retired: !!(r.dnf || r.dns || r.dsq), pits: st.length ? st.length - 1 : null,
+      sectors: [], inPit: false, retired: !!(r.dnf || r.dns || r.dsq), pits: st.length ? st.length - 1 : null, topSpeed: null, laps: r.number_of_laps ?? null,
       tyre: last ? { compound: (last.compound ?? "").toUpperCase(), laps: last.lap_end != null && last.lap_start != null ? last.lap_end - last.lap_start + 1 + (last.tyre_age_at_start ?? 0) : null, fresh: last.tyre_age_at_start === 0 } : null,
     };
   });
   const w = weather.at(-1);
   const maxLap = Math.max(0, ...results.map((r) => r.number_of_laps ?? 0));
   return {
-    mode: "last-session", source: "OpenF1 (most recent session, not live)", connected: false,
+    mode: "last-session", status: done ? "Finalised" : null, source: "OpenF1 (most recent session, not live)", connected: false,
     session: { meeting: meetings[0]?.meeting_name ?? session.location ?? "", name: session.session_name, type: session.session_type, start: session.date_start, end: session.date_end },
     lap: maxLap ? { current: maxLap, total: maxLap } : null,
     rows,

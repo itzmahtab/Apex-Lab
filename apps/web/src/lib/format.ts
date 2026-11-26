@@ -7,4 +7,4 @@ export function formatDateRange(start: string | null, end: string | null) {
     : `${s.getUTCDate()} ${m(s)} – ${e.getUTCDate()} ${m(e)} ${e.getUTCFullYear()}`;
 }
 export const formatDay = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }) + " UTC" : "";
+  iso ? new Date(iso).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" }) + " UTC" : "";

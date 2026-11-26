@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { LiveSnapshot } from "@/server/live";
+import { fmt12 } from "@/lib/geo";
 
 const TYRE: Record<string, { c: string; l: string }> = {
   SOFT: { c: "#FF453A", l: "S" }, MEDIUM: { c: "#F6C453", l: "M" }, HARD: { c: "#F4F6F8", l: "H" },
@@ -25,6 +26,8 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
   const [error, setError] = useState<string | null>(initial ? null : "No timing data is available right now.");
   const [updated, setUpdated] = useState<number | null>(null);
   const live = snap?.mode === "live";
+  /** the live feed (running or not) carries intervals and sectors; the OpenF1 fallback doesn't */
+  const feed = snap?.mode === "live" || snap?.mode === "feed";
 
   useEffect(() => {
     setUpdated(Date.now());
@@ -60,7 +63,9 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
           <div>
             <p className="flex items-center gap-2 text-xs uppercase tracking-[0.14em]">
               {live ? <><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-throttle opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-throttle" /></span><span className="text-throttle">Live</span></>
-                : <><span className="h-2 w-2 rounded-full bg-warn" aria-hidden /><span className="text-warn">Not live · latest session</span></>}
+                : snap.mode === "feed"
+                  ? <><span className="h-2 w-2 bg-telemetry" aria-hidden /><span className="text-telemetry">Live feed · session {snap.status?.toLowerCase() ?? "idle"}</span></>
+                  : <><span className="h-2 w-2 rounded-full bg-warn" aria-hidden /><span className="text-warn">Not live · latest session</span></>}
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{snap.session.meeting}</h1>
             <p className="text-muted">{snap.session.name}</p>
@@ -82,24 +87,24 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
           </div>
         </div>
         <p className="mt-3 text-xs text-subtle" aria-live="polite">
-          {snap.source}{updated ? ` · updated ${new Date(updated).toLocaleTimeString("en-GB")}` : ""}{live ? " · refreshes every 3 s" : ""}{error ? ` · ${error}` : ""}
+          {snap.source}{updated ? ` · updated ${fmt12(new Date(updated), undefined, true)}` : ""}{live ? " · refreshes every 3 s" : ""}{error ? ` · ${error}` : ""}
         </p>
       </header>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section aria-labelledby="tower-h" className="rounded-lg border border-border bg-surface/80 p-3 sm:p-5">
           <h2 id="tower-h" className="mb-3 px-1 text-sm font-medium uppercase tracking-[0.12em] text-muted">Timing</h2>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-sm">
+            <table className="w-full text-sm">
               <caption className="sr-only">Timing tower</caption>
               <thead><tr className="text-left text-xs text-subtle">
                 <th scope="col" className="pb-2 pl-1 font-normal">Pos</th><th scope="col" className="pb-2 font-normal">Driver</th>
                 <th scope="col" className="pb-2 text-right font-normal">{isRace ? "Gap" : "Gap to P1"}</th>
-                {live && <th scope="col" className="pb-2 text-right font-normal">Int</th>}
+                {feed && <th scope="col" className="hidden pb-2 text-right font-normal sm:table-cell">Int</th>}
                 {hasBest && <th scope="col" className="pb-2 text-right font-normal">Best</th>}
-                {live && <th scope="col" className="hidden pb-2 text-right font-normal md:table-cell">Sectors</th>}
-                <th scope="col" className="pb-2 pl-4 font-normal">Tyre</th>
-                <th scope="col" className="pb-2 pr-1 text-right font-normal">Pits</th>
+                {feed && <th scope="col" className="hidden pb-2 text-right font-normal md:table-cell">Sectors</th>}
+                <th scope="col" className="pb-2 pl-3 font-normal sm:pl-4">Tyre</th>
+                <th scope="col" className="hidden pb-2 pr-1 text-right font-normal sm:table-cell">Pits</th>
               </tr></thead>
               <tbody>
                 <AnimatePresence initial={false}>
@@ -115,9 +120,9 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
                         </span>
                       </td>
                       <td className="py-2 text-right num">{r.gap}</td>
-                      {live && <td className="py-2 text-right num text-muted">{r.interval}</td>}
+                      {feed && <td className="hidden py-2 text-right num text-muted sm:table-cell">{r.interval}</td>}
                       {hasBest && <td className={`py-2 text-right num ${r.bestIsOverall ? "text-purple" : ""}`}>{r.best}{r.bestIsOverall && <span className="sr-only"> (fastest)</span>}</td>}
-                      {live && (
+                      {feed && (
                         <td className="hidden py-2 text-right md:table-cell">
                           <span className="inline-flex gap-1">
                             {r.sectors.slice(0, 3).map((s, i) => (
@@ -126,8 +131,8 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
                           </span>
                         </td>
                       )}
-                      <td className="py-2 pl-4">{r.tyre ? <Tyre t={r.tyre} /> : <span className="text-subtle">—</span>}</td>
-                      <td className="py-2 pr-1 text-right num text-muted">{r.pits ?? "—"}</td>
+                      <td className="py-2 pl-3 sm:pl-4">{r.tyre ? <Tyre t={r.tyre} /> : <span className="text-subtle">—</span>}</td>
+                      <td className="hidden py-2 pr-1 text-right num text-muted sm:table-cell">{r.pits ?? "—"}</td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
@@ -157,7 +162,7 @@ export function LiveDashboard({ initial }: { initial: LiveSnapshot | null }) {
                   <li key={`${m.time}-${i}`} className="rounded-lg border border-border bg-bg/60 p-3">
                     <div className="flex items-center justify-between text-[11px] text-subtle">
                       <span className="flex items-center gap-1.5">{m.flag && <span className="h-2.5 w-2.5 rounded-sm" style={{ background: FLAG[m.flag.toUpperCase()] ?? "#9aa4b2" }} aria-hidden />}{m.category}{m.lap ? ` · lap ${m.lap}` : ""}</span>
-                      {m.time && <span className="num">{new Date(m.time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}</span>}
+                      {m.time && <span className="num">{fmt12(new Date(m.time))}</span>}
                     </div>
                     <p className="mt-1 leading-snug">{m.message}</p>
                   </li>

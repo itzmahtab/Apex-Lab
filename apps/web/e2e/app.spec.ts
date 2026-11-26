@@ -74,6 +74,24 @@ test.describe("season hub", () => {
     await expect(page.getByText(/UTC\+[12]/).first()).toBeVisible();
   });
 
+  test("background music toggles from the sound button", async ({ page }) => {
+    await page.goto("/");
+    const btn = page.getByRole("button", { name: "Play background music" });
+    await expect(btn).toHaveAttribute("aria-pressed", "false");
+    await btn.click();
+    await expect(page.getByRole("button", { name: "Mute background music" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Mute background music" }).click();
+    await expect(page.getByRole("button", { name: "Play background music" })).toBeVisible();
+  });
+
+  test("small screens get a menu instead of the inline nav", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "mobile only");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menu" }).click();
+    await page.locator("#mobile-nav").getByRole("link", { name: /Live/ }).click();
+    await expect(page).toHaveURL(/\/live$/);
+  });
+
   test("live dashboard explains when no timing is available", async ({ page }) => {
     await page.goto("/live");
     await expect(page.getByRole("status").filter({ hasText: "No timing data" })).toBeVisible();

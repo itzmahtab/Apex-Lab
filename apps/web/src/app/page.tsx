@@ -7,6 +7,8 @@ import { SeasonHero, type HeroRace } from "@/components/season-hero";
 import { CalendarGrid, ConstructorStandings, DriverStandings, LastRace, NextRace, SectionHead, SectionLink } from "@/components/season-sections";
 import { ArrowRightIcon, PulseIcon } from "@/components/icons";
 import { PointsChart } from "@/components/points-chart";
+import { CarShowroom } from "@/components/car-showroom";
+import { Reveal } from "@/components/reveal";
 import { SkeletonCard } from "@/components/states";
 import { CIRCUITS } from "@/lib/circuits";
 import { getSeason, type Race } from "@/server/season";
@@ -43,33 +45,42 @@ async function SeasonHub() {
     <>
       <SeasonHero season={s.season} races={s.races.map(toHero)} live />
       <Container className="space-y-[clamp(4rem,8vw,8rem)] pt-[clamp(3rem,6vw,6rem)]">
-        {s.nextRace && <NextRace race={s.nextRace} />}
-        {s.lastRace && <div className="lg:w-[88%]"><LastRace race={s.lastRace} /></div>}
+        {s.nextRace && <Reveal><NextRace race={s.nextRace} /></Reveal>}
+        {s.lastRace && <Reveal className="lg:w-[88%]"><LastRace race={s.lastRace} /></Reveal>}
 
         {(s.drivers.length > 0 || s.constructors.length > 0) && (
-          <section aria-labelledby="standings-h">
+          <Reveal><section aria-labelledby="standings-h">
             <SectionHead id="standings-h" index="03" kicker="Championship" title={`${s.season} standings`} />
             <div className="grid gap-8 lg:grid-cols-12">
               {s.drivers.length > 0 && <div className="lg:col-span-7"><DriverStandings rows={s.drivers} round={s.standingsRound} /></div>}
               {s.constructors.length > 0 && <div className="lg:col-span-5 lg:mt-20"><ConstructorStandings rows={s.constructors} /></div>}
             </div>
-          </section>
+          </section></Reveal>
+        )}
+
+        {s.constructors.length > 0 && s.drivers.length > 0 && (
+          <Reveal><section aria-labelledby="grid-h">
+            <SectionHead id="grid-h" index="04" kicker="The grid" title="Cars & drivers" />
+            <CarShowroom
+              teams={s.constructors.map((t) => ({ teamId: t.teamId, name: t.name, colour: t.colour, position: t.position, points: t.points }))}
+              drivers={s.drivers.map((d) => ({ id: d.id, code: d.code, name: d.name, number: d.number, teamId: d.teamId, team: d.team, colour: d.colour, position: d.position, points: d.points, wins: d.wins, nationality: d.nationality }))} />
+          </section></Reveal>
         )}
 
         {s.progression && (
-          <section aria-labelledby="prog-h" className="lg:ml-[8%]">
-            <SectionHead id="prog-h" index="04" kicker="Title fight" title="Points, round by round" />
+          <Reveal><section aria-labelledby="prog-h" className="lg:ml-[8%]">
+            <SectionHead id="prog-h" index="05" kicker="Title fight" title="Points, round by round" />
             <div className="rounded-lg border-2 border-border-strong bg-surface p-4 shadow-[8px_8px_0_var(--color-blood)] sm:p-6">
               <PointsChart data={s.progression} />
               <p className="mono mt-3 text-xs text-subtle">RACE + SPRINT POINTS AS AWARDED, SUMMED PER ROUND. TEAMMATES DASHED.</p>
             </div>
-          </section>
+          </section></Reveal>
         )}
 
-        <section aria-labelledby="cal-h">
-          <SectionHead id="cal-h" index="05" kicker="Calendar" title={`All ${s.races.length} rounds`} action={<SectionLink href="/events">Telemetry by event</SectionLink>} />
+        <Reveal><section aria-labelledby="cal-h">
+          <SectionHead id="cal-h" index="06" kicker="Calendar" title={`All ${s.races.length} rounds`} action={<SectionLink href="/events">Telemetry by event</SectionLink>} />
           <CalendarGrid races={s.races} />
-        </section>
+        </section></Reveal>
       </Container>
     </>
   );
@@ -92,7 +103,7 @@ export default function Home() {
 
       <Container className="space-y-[clamp(4rem,8vw,8rem)] pt-[clamp(4rem,8vw,8rem)]">
         {/* zig-zag tools: two unequal slabs, offset against each other */}
-        <section aria-labelledby="tools-h" className="grid gap-6 md:grid-cols-12">
+        <Reveal><section aria-labelledby="tools-h" className="grid gap-6 md:grid-cols-12">
           <h2 id="tools-h" className="sr-only">Tools</h2>
           <Link href="/live" className="distort relative overflow-hidden rounded-lg border-2 border-border-strong bg-cobalt p-6 text-bone shadow-[6px_6px_0_var(--color-blood)] md:col-span-7 sm:p-8">
             <svg className="pointer-events-none absolute -bottom-6 -right-4 h-40 w-[26rem]" viewBox="0 0 420 160" aria-hidden><text x="420" y="150" textAnchor="end" fontFamily="var(--font-display)" fontSize="150" fill="rgba(255,255,255,0.1)">LIVE</text></svg>
@@ -107,13 +118,13 @@ export default function Home() {
             <p className="mt-3 text-sm leading-relaxed text-muted">Any two laps since 2023: sector gaps, a track dominance map, synced speed, throttle and brake traces.</p>
             <span className="stamp mt-6 inline-flex items-center gap-2 border-2 border-border-strong px-3 py-2 text-[11px]">Compare laps<ArrowRightIcon className="h-3.5 w-3.5" /></span>
           </Link>
-        </section>
+        </section></Reveal>
 
-        <section aria-labelledby="featured-h">
-          <SectionHead id="featured-h" index="06" kicker="Featured comparisons" title="Laps worth a second look"
+        <Reveal><section aria-labelledby="featured-h">
+          <SectionHead id="featured-h" index="07" kicker="Featured comparisons" title="Laps worth a second look"
             action={<LinkButton href="/compare" variant="primary" className="hidden sm:inline-flex">Build your own</LinkButton>} />
           <FeaturedGrid />
-        </section>
+        </section></Reveal>
 
         <p className="mono max-w-3xl text-xs text-subtle">
           CALENDAR, CLASSIFICATIONS, STANDINGS: <a className="underline underline-offset-4 hover:text-fg" href="https://jolpi.ca" rel="noopener noreferrer">JOLPICA</a> (ERGAST SUCCESSOR). PRACTICE RESULTS, TEAM COLOURS, CIRCUIT GEOMETRY: OPENF1. UNOFFICIAL; NOT AFFILIATED WITH FORMULA 1.

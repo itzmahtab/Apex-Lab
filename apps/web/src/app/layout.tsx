@@ -4,6 +4,7 @@ import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./globals.css";
 import { AppFooter, AppHeader } from "@/components/site";
 import { MotionProvider } from "@/components/motion-provider";
+import { Soundtrack } from "@/components/soundtrack";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AppHeader />
           {children}
           <AppFooter />
+          <Soundtrack />
         </MotionProvider>
       </body>
     </html>

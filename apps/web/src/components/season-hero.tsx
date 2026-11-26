@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { GlobePin } from "@/components/globe";
 import { Countdown, LocalClock, useNow, ZonedTime } from "@/components/clock";
 import { TrophyIcon } from "@/components/icons";
+import { fmt12 } from "@/lib/geo";
 
 const Globe = dynamic(() => import("@/components/globe").then((m) => m.Globe), {
   ssr: false,
@@ -48,9 +49,9 @@ export function SeasonHero({ season, races, live }: { season: number | null; rac
             {season ? <>Season {season} <span className="text-subtle">/</span> {pad(done.length)} of {pad(races.length)} run</> : "Season calendar"}
           </p>
           <h1 id="hero-h" className="mt-4 uppercase leading-[0.86] tracking-[-0.045em] text-[clamp(2.75rem,8.5vw,7.25rem)]">
-            <span className="block">One planet</span>
-            <span className="block pl-[8%] text-accent">{races.length} circuits</span>
-            <span className="relative block">
+            <span className="stamp-in" style={{ ["--i" as string]: 0 }}>One planet</span>
+            <span className="stamp-in pl-[8%] text-accent" style={{ ["--i" as string]: 1 }}>{races.length} circuits</span>
+            <span className="stamp-in relative" style={{ ["--i" as string]: 2 }}>
               <span className="outline-text">Real sun</span>
               <span className="stamp absolute -top-1 right-0 hidden rotate-6 border-2 border-blood bg-blood px-2 py-1 text-[10px] text-bone sm:inline-block">Day/Night: live</span>
             </span>
@@ -95,7 +96,7 @@ export function SeasonHero({ season, races, live }: { season: number | null; rac
                 <div className="mt-4 grid grid-cols-2 border-2 border-border">
                   <div className="border-r-2 border-border p-3"><div className="stamp text-[10px] text-subtle">At the track</div><LocalClock tz={race.tz} lat={race.lat} lng={race.lng} className="mt-1 block text-sm" /></div>
                   <div className="p-3"><div className="stamp text-[10px] text-subtle">Your time</div>
-                    <span className="num mt-1 block text-sm text-fg">{now ? now.toLocaleTimeString("en-GB") : " "}</span>
+                    <span className="num mt-1 block text-sm text-fg">{now ? fmt12(now, undefined, true) : " "}</span>
                     <span className="mono block truncate text-xs text-subtle">{now ? Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, " ") : ""}</span>
                   </div>
                 </div>

@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { buildCar } from "@/lib/car-model";
+
+const FORWARD = new THREE.Vector3(1, 0, 0);
 
 export interface Track3DData {
   year: number; sessionName: string; lapTimeS: number; driver: string; driverName: string | null; teamColour: string | null;
@@ -149,12 +152,17 @@ export function Track3D({ data: initial, src, className = "h-[420px]", compact =
 
     // the car + trail
     const team = data.teamColour && /^[0-9a-fA-F]{6}$/.test(data.teamColour) ? new THREE.Color(`#${data.teamColour}`) : new THREE.Color(0xcc7722);
-    const car = new THREE.Mesh(new THREE.SphereGeometry(0.075, 24, 24), new THREE.MeshBasicMaterial({ color: team }));
+    // a miniature of the showroom car, painted in the lap driver's team colour, steering along the line
+    const car = new THREE.Group();
+    const model = buildCar(`#${team.getHexString()}`, { lowDetail: true });
+    model.car.scale.setScalar(0.075);
+    car.add(model.car);
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d")!; const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.3, "rgba(255,255,255,.35)"); gr.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })(),
       color: team, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }));
-    glow.scale.setScalar(0.7);
+    glow.scale.setScalar(0.9);
+    glow.position.y = -0.03;
     car.add(glow);
     scene.add(car);
     const TRAIL = 70;
@@ -209,8 +217,10 @@ export function Track3D({ data: initial, src, className = "h-[420px]", compact =
       const tau = reduced ? 0 : ((now - start) / 1000) % lap;
       const f = locate(tau);
       const pos = curve.getPoint(f / n);
-      car.position.copy(pos).setY(pos.y + 0.07);
-      hist.unshift(car.position.clone()); if (hist.length > TRAIL) hist.pop();
+      car.position.copy(pos).setY(pos.y + 0.012);
+      car.quaternion.setFromUnitVectors(FORWARD, curve.getTangent(f / n).normalize());
+      for (const w of model.wheels) w.rotation.z -= dt * 30;
+      hist.unshift(car.position.clone().setY(car.position.y + 0.02)); if (hist.length > TRAIL) hist.pop();
       for (let i = 0; i < TRAIL; i++) {
         const h = hist[Math.min(i, hist.length - 1)]!;
         trailPos.set([h.x, h.y, h.z], i * 3);
@@ -218,7 +228,7 @@ export function Track3D({ data: initial, src, className = "h-[420px]", compact =
         trailCol.set([team.r * a, team.g * a, team.b * a], i * 3);
       }
       trailGeo.attributes.position!.needsUpdate = true; trailGeo.attributes.color!.needsUpdate = true;
-      glow.scale.setScalar(0.6 + Math.sin(now / 160) * 0.06);
+      glow.scale.setScalar(0.8 + Math.sin(now / 160) * 0.06);
       if (hud.current && (hudTick += dt) > 0.05) {
         hudTick = 0;
         const i0 = Math.floor(f) % n;
