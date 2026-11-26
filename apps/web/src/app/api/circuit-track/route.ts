@@ -8,5 +8,6 @@ export async function GET(req: Request) {
   const p = q.safeParse(Object.fromEntries(new URL(req.url).searchParams));
   if (!p.success) return Response.json({ error: { code: "VALIDATION_ERROR", message: "season and round are required" } }, { status: 400 });
   const track = await getTrackForRound(p.data.season, p.data.round);
-  return Response.json(track, { headers: { "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" } });
+  // A miss may be a transient upstream failure: never let it be cached for long.
+  return Response.json(track, { headers: { "cache-control": track ? "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" : "public, max-age=60" } });
 }

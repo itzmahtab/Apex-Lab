@@ -134,7 +134,8 @@ export async function getSeason(seasonParam: number | "current" = "current"): Pr
   if (env().DATA_SOURCE === "fixture") return null; // offline/demo mode: no network
   try {
     const c = await jolpicaClient();
-    const s = String(seasonParam);
+    // The current year and "current" are the same schedule; use one cache key for both.
+    const s = seasonParam === new Date().getUTCFullYear() ? "current" : String(seasonParam);
     const [schedule, colours] = await Promise.all([c.get(`${s}.json`, {}, raceTable, 6 * 3600), liveColours()]);
     const season = Number(schedule.MRData.RaceTable.season ?? schedule.MRData.RaceTable.Races[0]?.season);
     const pastSeason = season < new Date().getUTCFullYear();
@@ -293,11 +294,13 @@ export async function getGrandPrix(season: number, round: number): Promise<{ rac
 /** 3D circuit geometry for a round: resolves the OpenF1 circuit, then its most recent fast lap there. */
 export async function getTrackForRound(season: number, round: number) {
   if (env().DATA_SOURCE === "fixture") return null;
-  const data = await getSeason(season);
-  const race = data?.races.find((r) => r.round === round);
-  if (!race) return null;
+  // Only the race date is needed: one cached schedule call, not the whole season build.
+  const c = await jolpicaClient();
+  const sched = await c.get(`${season}.json`, {}, raceTable, 6 * 3600).catch((e) => { console.error("[apexlab] track schedule", e instanceof Error ? e.message : e); return null; });
+  const r = sched?.MRData.RaceTable.Races.find((x) => Number(x.round) === round);
+  if (!r) return null;
   const of1 = await openF1Repository();
-  const meeting = await of1.findMeeting(season, race.start).catch(() => null);
+  const meeting = await of1.findMeeting(season, iso({ date: r.date, time: r.time })!).catch(() => null);
   if (!meeting?.circuit_key) return null;
-  return of1.getCircuitTrack(meeting.circuit_key).catch(() => null);
+  return of1.getCircuitTrack(meeting.circuit_key).catch((e) => { console.error("[apexlab] track", e instanceof Error ? e.message : e); return null; });
 }
