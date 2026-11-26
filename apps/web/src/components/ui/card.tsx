@@ -2,12 +2,12 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
 export const Card = ({ className, ...p }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("rounded-2xl border border-border bg-surface/80 p-4 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset] sm:p-6", className)} {...p} />
+  <div className={cn("rounded-lg border border-border bg-surface p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] sm:p-6", className)} {...p} />
 );
 export const CardTitle = ({ className, ...p }: HTMLAttributes<HTMLHeadingElement>) => (
-  <h2 className={cn("text-sm font-medium uppercase tracking-[0.12em] text-muted", className)} {...p} />
+  <h2 className={cn("font-mono text-xs font-bold uppercase tracking-[0.16em] text-muted", className)} {...p} />
 );
 export const Badge = ({ className, tone = "neutral", ...p }: HTMLAttributes<HTMLSpanElement> & { tone?: "neutral" | "warn" | "live" }) => (
-  <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-    tone === "warn" ? "border-warn/40 bg-warn/10 text-warn" : tone === "live" ? "border-throttle/40 bg-throttle/10 text-throttle" : "border-border bg-elevated text-muted", className)} {...p} />
+  <span className={cn("inline-flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider",
+    tone === "warn" ? "border-warn bg-warn text-bg" : tone === "live" ? "border-throttle bg-throttle text-bg" : "border-border bg-elevated text-muted", className)} {...p} />
 );

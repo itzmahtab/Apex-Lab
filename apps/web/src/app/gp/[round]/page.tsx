@@ -67,27 +67,27 @@ export default async function GrandPrix(p: Props) {
         <div className="flex flex-col gap-5">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-subtle num">Round {String(race.round).padStart(2, "0")}{race.hasSprint ? " · Sprint weekend" : ""}</p>
-            <h1 id="gp-h" className="mt-2 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{race.name}</h1>
+            <h1 id="gp-h" className="mt-2 text-[clamp(2.25rem,5vw,4rem)] uppercase leading-[0.9]">{race.name}</h1>
             <p className="mt-1 text-muted">{race.circuitName} · {race.locality}, {race.country}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface/80 p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-subtle">Right now in {race.locality}</div>
+          <div className="rounded-lg border-2 border-border-strong bg-surface p-4">
+            <div className="stamp text-[10px] text-subtle">Right now in {race.locality}</div>
             <LocalClock tz={race.tz} lat={race.lat} lng={race.lng} className="mt-1 block text-2xl" />
           </div>
           {race.podium.length > 0 ? (
             <ol className="grid grid-cols-3 gap-2" aria-label="Podium">
               {race.podium.map((d, i) => (
-                <li key={d.id} className="relative overflow-hidden rounded-2xl border border-border bg-surface/80 p-3 text-center">
+                <li key={d.id} className={`relative overflow-hidden rounded-lg border-2 border-border-strong p-3 text-center ${i === 0 ? "bg-accent text-bg shadow-[6px_6px_0_var(--color-blood)]" : "bg-surface shadow-[4px_4px_0_var(--color-cobalt)]"}`}>
                   <div className="absolute inset-x-0 top-0 h-1" style={{ background: d.colour }} aria-hidden />
-                  <div className="text-[10px] uppercase tracking-[0.14em] text-subtle">P{i + 1}</div>
-                  <div className="text-xl font-bold num">{d.code}</div>
-                  <div className="truncate text-xs text-muted">{d.team}</div>
+                  <div className={`stamp text-[10px] ${i === 0 ? "text-bg" : "text-subtle"}`}>P{i + 1}</div>
+                  <div className="text-xl">{d.code}</div>
+                  <div className={`mono truncate text-xs ${i === 0 ? "text-bg" : "text-muted"}`}>{d.team}</div>
                 </li>
               ))}
             </ol>
           ) : upcoming ? (
-            <div className="rounded-2xl border border-border bg-surface/80 p-4">
-              <div className="mb-2 text-sm text-muted">{upcoming.label} starts in</div>
+            <div className="rounded-lg border-2 border-border-strong bg-surface p-4 shadow-[6px_6px_0_var(--color-blood)]">
+              <div className="stamp mb-2 text-[11px] text-muted">{upcoming.label} starts in</div>
               <Countdown to={upcoming.start} />
             </div>
           ) : null}
@@ -96,7 +96,7 @@ export default async function GrandPrix(p: Props) {
       </section>
 
       <section aria-labelledby="res-h">
-        <h2 id="res-h" className="mb-3 text-2xl font-semibold tracking-tight">Every session</h2>
+        <h2 id="res-h" className="mb-4 border-b-2 border-border-strong pb-3 text-[clamp(1.6rem,3.6vw,2.5rem)] uppercase leading-none"><span className="outline-text mr-3">01</span>Every session</h2>
         <Suspense fallback={<SkeletonCard h="h-[480px]" />}><Results season={s.season} round={race.round} tz={race.tz} /></Suspense>
       </section>
     </PageContainer>

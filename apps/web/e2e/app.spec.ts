@@ -65,7 +65,7 @@ test.describe("API", () => {
 test.describe("season hub", () => {
   test("home renders the globe hero and degrades gracefully offline", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("one live planet");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("One planet");
     await expect(page.getByRole("navigation", { name: "Rounds" })).toBeVisible();
     await expect(page.getByText("Live season data (calendar, results and standings) is unavailable")).toBeVisible();
     // picking a round from the accessible list updates the detail card with a live local clock

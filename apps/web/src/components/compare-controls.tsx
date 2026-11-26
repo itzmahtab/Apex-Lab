@@ -18,7 +18,7 @@ export interface ControlsInitial {
   selection: { a?: string; la?: number; b?: string; lb?: number };
 }
 
-const sel = "w-full min-h-11 rounded-xl border border-border bg-elevated px-3 text-sm text-fg transition-colors hover:border-border-strong disabled:opacity-50";
+const sel = "w-full min-h-11 rounded-lg border border-border bg-elevated px-3 text-sm text-fg transition-colors hover:border-border-strong disabled:opacity-50";
 
 function Field({ id, label, children, extra }: { id: string; label: string; children: React.ReactNode; extra?: React.ReactNode }) {
   return (
@@ -107,7 +107,7 @@ export function CompareControls({ initial }: { initial: ControlsInitial }) {
 
   return (
     <section aria-label="Choose a comparison" aria-busy={pending || !!loading}
-      className="rounded-2xl border border-border bg-surface/80 p-4 sm:p-5">
+      className="rounded-lg border border-border bg-surface/80 p-4 sm:p-5">
       <div className="grid gap-3 md:grid-cols-[0.6fr_1.6fr_1fr]">
         <Field id="season" label="Season">
           <select id="season" className={sel} value={year} onChange={(e) => pickYear(Number(e.target.value))}>
@@ -131,7 +131,7 @@ export function CompareControls({ initial }: { initial: ControlsInitial }) {
       <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_auto_1fr] lg:items-end">
         {driverField("a")}
         <button type="button" disabled={!a || !b || pending} onClick={() => go({ session: session!, a: b, la: lb, b: a, lb: la })}
-          className="min-h-11 rounded-xl border border-border bg-elevated px-3 text-sm text-muted transition-colors hover:border-border-strong hover:text-fg disabled:opacity-40" aria-label="Swap driver A and driver B">
+          className="min-h-11 rounded-lg border border-border bg-elevated px-3 text-sm text-muted transition-colors hover:border-border-strong hover:text-fg disabled:opacity-40" aria-label="Swap driver A and driver B">
           ⇄ Swap
         </button>
         {driverField("b")}

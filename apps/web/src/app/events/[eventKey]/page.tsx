@@ -32,15 +32,15 @@ export default async function EventPage({ params }: P) {
       {event.officialName && <p className="mt-1 text-xs uppercase tracking-[0.1em] text-subtle">{event.officialName}</p>}
       <ul className="mt-8 grid gap-3 md:grid-cols-2">
         {sessions.map((s) => (
-          <li key={s.key} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface/80 p-5">
+          <li key={s.key} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface/80 p-5">
             <div>
               <div className="flex items-center gap-2 font-semibold">{s.name}{s.status === "live" && <Badge tone="live">Live</Badge>}{s.status === "upcoming" && <Badge>Upcoming</Badge>}</div>
               <div className="text-sm text-muted num">{formatDay(s.startDate)}</div>
             </div>
             {s.status === "completed" && (
               <div className="flex gap-2">
-                <Link href={`/sessions/${s.key}`} className="rounded-xl border border-border bg-elevated px-3 py-2 text-sm hover:border-border-strong">Results</Link>
-                <Link href={`/compare?session=${s.key}`} className="rounded-xl bg-accent-fill px-3 py-2 text-sm font-medium text-white hover:bg-[#c4271b]">Compare</Link>
+                <Link href={`/sessions/${s.key}`} className="rounded-lg border border-border bg-elevated px-3 py-2 text-sm hover:border-border-strong">Results</Link>
+                <Link href={`/compare?session=${s.key}`} className="rounded-lg bg-accent-fill px-3 py-2 text-sm uppercase text-bg hover:bg-[#b86b1f]">Compare</Link>
               </div>
             )}
           </li>

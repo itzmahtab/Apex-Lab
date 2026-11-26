@@ -1,54 +1,103 @@
 @import "tailwindcss";
 
+/*
+ * ApexLab · abstract brutalism
+ * Concrete, metal and raw type. Off-black (never #000), concrete grey, cobalt, oxblood, ochre,
+ * burnt orange, moss. Cobalt and oxblood fail contrast as text on the dark ground, so they are only
+ * fills, rules and offset shadows; text uses ochre, concrete, bone and the light cobalt tint.
+ */
 @theme {
-  --color-bg: #08090c;
-  --color-surface: #11141a;
-  --color-elevated: #181c24;
-  --color-border: #232833;
-  --color-border-strong: #313847;
-  --color-fg: #f4f6f8;
-  --color-muted: #9aa4b2;
-  --color-subtle: #6b7484;
-  --color-accent: #ff453a;
-  /* white text on this fill is 4.8:1 (WCAG AA); use for buttons, keep --accent for lines and highlights */
-  --color-accent-fill: #d92d20;
-  --color-telemetry: #56b4e9;
-  --color-throttle: #67d5a5;
-  --color-warn: #f6c453;
-  --color-purple: #b48cff;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --color-bg: #0e0e0e;
+  --color-surface: #161616;
+  --color-elevated: #202020;
+  --color-border: #3a3a3a;
+  --color-border-strong: #a9a9a9;
+  --color-fg: #f4f4f1;
+  --color-muted: #a9a9a9;      /* cinza concreto — 8.1:1 on bg */
+  --color-subtle: #8a8a8a;     /* 5.5:1 on bg */
+  --color-accent: #cc7722;     /* amarelo ocre — lines, highlights, text (5.7:1) */
+  --color-accent-fill: #cc7722;/* button fill, off-black text on it (5.8:1) */
+  --color-telemetry: #5b8fe0;  /* light cobalt tint, readable as text */
+  --color-throttle: #6b8e23;   /* verde musgo */
+  --color-warn: #cc7722;
+  --color-purple: #b48cff;     /* timing convention: overall fastest */
+  --color-cobalt: #0047ab;     /* azul cobalto — fills and shadows only */
+  --color-blood: #8b0000;      /* vermelho sangue — fills and shadows only */
+  --color-burnt: #cc5500;      /* laranja queimado */
+  --color-concrete: #a9a9a9;
+  --color-bone: #f4f4f1;
+  --font-sans: "Arial Black", "Archivo Black", "Arial Bold", Gadget, sans-serif;
+  --font-display: "Arial Black", "Archivo Black", "Arial Bold", Gadget, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius-brut: 0.5rem;
+  --ease-brut: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 :root { color-scheme: dark; }
 html { background: var(--color-bg); }
 body {
-  background:
-    radial-gradient(1200px 500px at 15% -10%, rgba(255, 69, 58, 0.10), transparent 60%),
-    radial-gradient(900px 400px at 100% 0%, rgba(86, 180, 233, 0.07), transparent 60%),
-    var(--color-bg);
-  background-attachment: fixed;
+  /* poured-concrete grain: inline SVG turbulence, no image requests */
+  background-color: var(--color-bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .66 0 0 0 0 .66 0 0 0 0 .66 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   color: var(--color-fg);
   font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.03em; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; font-weight: 500; }
+.mono { font-family: var(--font-mono); font-weight: 500; }
 
-/* faint engineering grid behind hero sections */
+/* brushed-metal stripes for plates and rules */
+.metal {
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #232323, #151515);
+}
+/* faint survey grid, kept for the legacy pages */
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+    linear-gradient(to right, rgba(169,169,169,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(169,169,169,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-:focus-visible { outline: 2px solid var(--color-telemetry); outline-offset: 2px; border-radius: 6px; }
-::selection { background: rgba(255, 69, 58, 0.35); }
+/* hard offset shadow plates */
+.plate { border: 2px solid var(--color-border-strong); border-radius: var(--radius-brut); background: var(--color-surface); box-shadow: 6px 6px 0 var(--color-cobalt); }
+.plate-blood { box-shadow: 6px 6px 0 var(--color-blood); }
+.plate-ochre { box-shadow: 6px 6px 0 var(--color-accent); }
+
+/* hover distortion: an abrupt, stepped skew-shift. transform-only, no layout */
+.distort { transition: transform 240ms steps(3, end), box-shadow 240ms steps(3, end); }
+.distort:hover, .distort:focus-visible { transform: translate(-3px, -3px) skewX(-2deg); box-shadow: 10px 10px 0 var(--color-blood); }
+.distort:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--color-blood); }
+
+/* raw type: hard double-print misregistration on hover */
+.misprint { position: relative; }
+.misprint:hover { text-shadow: 3px 0 0 var(--color-blood), -3px 0 0 var(--color-cobalt); }
+
+/* outlined display numerals */
+.outline-text { color: transparent; -webkit-text-stroke: 2px var(--color-border-strong); }
+
+/* stamped label */
+.stamp { font-family: var(--font-mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; }
+
+/* ticker */
+@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+.marquee { animation: marquee 60s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+
+/* entry: fade + 16px rise, cascades via --i */
+@keyframes rise { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+.rise { animation: rise 420ms var(--ease-brut) both; animation-delay: calc(var(--i, 0) * 80ms); }
+
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: var(--color-blood); color: var(--color-bone); }
 
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa4b2' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9a9a9' stroke-width='3'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.25rem !important;
@@ -56,8 +105,8 @@ select {
 
 @keyframes shimmer { 0% { background-position: -400px 0 } 100% { background-position: 400px 0 } }
 .skeleton {
-  border-radius: 16px;
-  background: linear-gradient(90deg, #12151b 0%, #1a1f28 50%, #12151b 100%);
+  border-radius: var(--radius-brut);
+  background: linear-gradient(90deg, #161616 0%, #262626 50%, #161616 100%);
   background-size: 800px 100%;
   animation: shimmer 1.4s linear infinite;
 }
@@ -65,7 +114,8 @@ select {
 .draw-line { stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: dash 2.4s ease-out forwards; }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton { animation: none; }
+  .skeleton, .marquee, .rise { animation: none; }
   .draw-line { animation: none; stroke-dashoffset: 0; }
+  .distort:hover, .distort:focus-visible { transform: none; }
   * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }

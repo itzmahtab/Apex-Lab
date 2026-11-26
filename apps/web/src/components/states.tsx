@@ -27,12 +27,12 @@ export function DataStatusNotice({ isDemo, sourceName, warnings }: { isDemo: boo
   return (
     <div className="space-y-2">
       {isDemo && (
-        <p className="rounded-xl border border-warn/40 bg-warn/10 px-4 py-2.5 text-sm text-warn" role="note">
+        <p className="rounded-lg border border-warn/40 bg-warn/10 px-4 py-2.5 text-sm text-warn" role="note">
           <strong>Demo data.</strong> Every value on this page is synthetic and invented (source: {sourceName}). It is not a real F1 result.
         </p>
       )}
       {warnings.length > 0 && (
-        <ul className="rounded-xl border border-border bg-surface/70 px-4 py-2.5 text-sm text-muted list-disc pl-8" aria-label="Data notices">
+        <ul className="rounded-lg border border-border bg-surface/70 px-4 py-2.5 text-sm text-muted list-disc pl-8" aria-label="Data notices">
           {warnings.map((w) => <li key={w}>{w}</li>)}
         </ul>
       )}

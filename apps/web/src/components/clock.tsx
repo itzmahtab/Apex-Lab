@@ -44,12 +44,12 @@ export function Countdown({ to, compact = false }: { to: string; compact?: boole
   const p = countdownParts(ms ?? 0);
   const cells: [number, string][] = [[p.d, "days"], [p.h, "hrs"], [p.m, "min"], [p.s, "sec"]];
   return (
-    <div className={`grid grid-cols-4 ${compact ? "gap-1.5" : "gap-2 sm:gap-3"}`} role="timer" aria-live="off"
+    <div className="grid grid-cols-4 border-2 border-border-strong" role="timer" aria-live="off"
       aria-label={ms == null ? "Countdown" : `${p.d} days ${p.h} hours ${p.m} minutes`}>
       {cells.map(([v, l]) => (
-        <div key={l} className={`rounded-xl border border-border bg-bg/70 text-center ${compact ? "px-1 py-1.5" : "px-2 py-3"}`}>
-          <div className={`num font-semibold tabular-nums ${compact ? "text-xl" : "text-3xl sm:text-4xl"}`}>{ms == null ? "--" : String(v).padStart(2, "0")}</div>
-          <div className="text-[10px] uppercase tracking-[0.14em] text-subtle">{l}</div>
+        <div key={l} className={`border-r-2 border-border-strong bg-bg text-center last:border-r-0 ${compact ? "px-1 py-1.5" : "px-2 py-3"}`}>
+          <div className={`num tabular-nums ${compact ? "text-xl" : "text-3xl sm:text-5xl"}`}>{ms == null ? "--" : String(v).padStart(2, "0")}</div>
+          <div className="stamp text-[10px] text-subtle">{l}</div>
         </div>
       ))}
     </div>

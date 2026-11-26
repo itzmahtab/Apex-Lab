@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import "@fontsource/archivo-black/latin-400.css"; // open-licence stand-in where Arial Black isn't installed
+import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./globals.css";
 import { AppFooter, AppHeader } from "@/components/site";
 import { MotionProvider } from "@/components/motion-provider";
@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   description: "Compare any two F1 laps from 2023 onwards: lap and sector deltas, speed, throttle and brake traces, and a track dominance map. Share the result with one link.",
   openGraph: { siteName: "ApexLab", type: "website" },
 };
-export const viewport: Viewport = { themeColor: "#08090c", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#0e0e0e", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en">
       <body className="min-h-dvh flex flex-col antialiased">
         <MotionProvider>
           <AppHeader />
