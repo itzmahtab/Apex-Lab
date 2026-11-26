@@ -62,6 +62,31 @@ test.describe("API", () => {
   });
 });
 
+test.describe("season hub", () => {
+  test("home renders the globe hero and degrades gracefully offline", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("one live planet");
+    await expect(page.getByRole("navigation", { name: "Rounds" })).toBeVisible();
+    await expect(page.getByText("Live season data (calendar, results and standings) is unavailable")).toBeVisible();
+    // picking a round from the accessible list updates the detail card with a live local clock
+    await page.getByRole("navigation", { name: "Rounds" }).getByRole("button").filter({ hasText: "Monte Carlo" }).click();
+    await expect(page.getByRole("heading", { level: 2, name: "Monte Carlo" })).toBeVisible();
+    await expect(page.getByText(/UTC\+[12]/).first()).toBeVisible();
+  });
+
+  test("live dashboard explains when no timing is available", async ({ page }) => {
+    await page.goto("/live");
+    await expect(page.getByRole("status").filter({ hasText: "No timing data" })).toBeVisible();
+  });
+
+  test("circuit-track API validates input", async ({ request }) => {
+    expect((await request.get("/api/circuit-track?season=abc&round=1")).status()).toBe(400);
+    const ok = await request.get("/api/circuit-track?season=2026&round=1");
+    expect(ok.status()).toBe(200);
+    expect(await ok.json()).toBeNull(); // fixture mode: no network
+  });
+});
+
 test.describe("quality", () => {
   test("no horizontal scroll and keyboard reachable controls", async ({ page }) => {
     await page.goto(DEMO);
@@ -71,7 +96,7 @@ test.describe("quality", () => {
     await expect(page.getByText("Skip to content")).toBeFocused();
   });
 
-  for (const path of ["/", "/methodology", DEMO]) {
+  for (const path of ["/", "/live", "/methodology", DEMO]) {
     test(`no serious accessibility violations on ${path.split("?")[0]}`, async ({ page }) => {
       await page.goto(path);
       await page.waitForLoadState("networkidle");

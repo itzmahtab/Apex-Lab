@@ -26,6 +26,9 @@ See which corners decided it, where the throttle went down earlier, and share th
 
 | | |
 |---|---|
+| 🌍 **Season hub (home)** | A 3D globe lit by the real sun right now, with every circuit pinned, the season route animated, and the local time at each track. Includes the next-race countdown, the latest podium, driver and constructor standings, a points-progression chart and the full calendar with winners. |
+| 🏎️ **Every Grand Prix in 3D** | `/gp/[round]`: the circuit built from real car positions (with real, exaggerated elevation), a racing line coloured by speed, and the pole lap replayed in real time. Plus tabs for FP1, FP2, FP3, Sprint Qualifying, Sprint, Qualifying and Race classifications. |
+| 📡 **Live timing** | `/live`: timing tower, gaps, intervals, sectors, tyres, pit stops, weather and race control. Real time with a self-hosted [f1-livetiming-api](https://github.com/julesr0y/f1-livetiming-api); otherwise the latest OpenF1 session, labelled "not live". |
 | 🏁 **Compare any two laps** | Pick a season, Grand Prix and session. The two fastest drivers and their best laps load automatically; change anything. |
 | 🗺️ **Track dominance map** | The circuit, drawn from car-position data, split into 24 mini-sectors and coloured by whoever was quicker through each. |
 | 📈 **Synced telemetry** | Speed, gap, throttle, brake and gear on one distance axis. Hover any chart and all five follow. |
@@ -135,6 +138,17 @@ CF_ACCOUNT_ID=… CF_KV_NAMESPACE_ID=… pnpm --filter @apexlab/web warm-cache
 ```
 
 Details and trade-offs: [`docs/architecture-notes.md`](docs/architecture-notes.md).
+
+## Season data sources
+
+| Data | Source |
+|---|---|
+| Calendar, session times, race / sprint / qualifying classifications, standings | [Jolpica](https://github.com/jolpica/jolpica-f1) (community successor to Ergast). Cached, and requests are spaced inside its 4 req/s, 500 req/h limits. |
+| Practice and sprint-qualifying results, team colours, circuit geometry, weather, race control | [OpenF1](https://openf1.org) |
+| Real-time timing on `/live` | Your own [f1-livetiming-api](https://github.com/julesr0y/f1-livetiming-api) instance. It holds the SignalR connection to F1's live-timing feed, which a Cloudflare Worker can't keep open. Set `LIVETIMING_API_URL` to its base URL. |
+| Land mask for the globe | Natural Earth 1:110m (public domain), packed into a 1° bitmask in `apps/web/src/lib/land-mask.ts` |
+
+Every upstream response is validated with Zod. If a source fails, the page still renders: the globe falls back to the static circuit table, and missing sections say so.
 
 ## Data and rights
 
