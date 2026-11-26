@@ -113,7 +113,7 @@ function DriverCard({ d, big = false, onPick }: { d: ShowroomDriver; big?: boole
       <span className="pointer-events-none absolute bottom-0 right-0 h-[62%] w-[58%] opacity-25" style={{ background: d.colour }} aria-hidden />
       <span className={`pointer-events-none absolute -right-1 leading-[0.8] ${big ? "-top-2 text-[9rem]" : "-top-1 text-[5.5rem]"}`}
         style={{ color: "transparent", WebkitTextStroke: `2px ${d.colour}` }} aria-hidden>{d.number ?? "–"}</span>
-      <img src={d.portrait} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
+      <img src={d.portrait} alt="" loading="lazy" decoding="async"
         className={`pointer-events-none absolute bottom-0 right-0 object-contain object-bottom transition-transform duration-300 ease-out group-hover:scale-105 ${big ? "h-[92%] max-w-[62%]" : "h-[88%] max-w-[58%]"}`}
         onError={(e) => { e.currentTarget.style.display = "none"; }} />
       <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: d.colour }} aria-hidden />
@@ -173,7 +173,7 @@ export function CarShowroom({ season, teams, drivers }: { season: number; teams:
                 <span className="pointer-events-none absolute -left-10 bottom-10 h-[46%] w-[120%] -rotate-3" style={{ background: team.colour, opacity: 0.85 }} aria-hidden />
                 <span className="pointer-events-none absolute right-3 top-2 text-[7rem] uppercase leading-none tracking-tighter sm:text-[10rem]"
                   style={{ color: "transparent", WebkitTextStroke: "2px rgba(244,244,241,.18)" }} aria-hidden>{String(team.position).padStart(2, "0")}</span>
-                <img key={team.teamId} src={team.car} alt={`${team.name} ${season} car`} decoding="async" referrerPolicy="no-referrer"
+                <img key={team.teamId} src={team.car} alt={`${team.name} ${season} car`} decoding="async" onError={() => setView("3d")}
                   className="car-in absolute bottom-[8%] left-1/2 w-[112%] max-w-none -translate-x-1/2 object-contain drop-shadow-[0_18px_18px_rgba(0,0,0,.6)]" />
               </>
             ) : <Turntable colour={team.colour} />}

@@ -88,7 +88,7 @@ export function LastRace({ race }: { race: Race }) {
             <li key={d.id} style={{ order: order.indexOf(i) }}
               className={`relative flex flex-col justify-end overflow-hidden border-2 border-border-strong p-3 sm:p-5 ${heights[i]} ${i === 0 ? "z-10 -mx-[2px] bg-accent text-bg shadow-[8px_8px_0_var(--color-blood)]" : "bg-surface"}`}>
               <span className={`pointer-events-none absolute -right-2 -top-6 text-[7rem] leading-none sm:text-[11rem] ${i === 0 ? "text-bg" : "outline-text"}`} aria-hidden>{i + 1}</span>
-              <img src={d.portrait} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
+              <img src={d.portrait} alt="" loading="lazy" decoding="async"
                 className="pointer-events-none absolute right-[-4%] top-[8%] h-[175%] max-w-none object-contain object-top drop-shadow-[0_8px_10px_rgba(0,0,0,.5)]" />
               <span className="absolute left-0 top-0 h-full w-2" style={{ background: d.colour }} aria-hidden />
               <div className={`stamp relative z-10 text-[10px] ${i === 0 ? "text-bg" : "text-subtle"}`}>P{i + 1}{i === 0 ? " / Winner" : ""}</div>

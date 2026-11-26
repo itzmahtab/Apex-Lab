@@ -1,9 +1,10 @@
 /**
- * Official car and driver imagery, loaded straight from Formula 1's image CDN (Cloudinary at
- * media.formula1.com). Nothing is copied into this repository. The project owner chose to use these;
+ * Official car and driver imagery from Formula 1's image CDN (Cloudinary at media.formula1.com),
+ * relayed and edge-cached by /api/f1-image. Nothing is copied into this repository. The project owner chose to use these;
  * they remain © Formula 1 / the teams. Unknown images resolve to F1's own fallback silhouette.
  */
-const BASE = "https://media.formula1.com/image/upload";
+/** Served through this site's own /api/f1-image proxy (same origin, edge-cached); see that route. */
+const BASE = "/api/f1-image/image/upload";
 
 /** Jolpica constructorId → F1 media folder name. */
 const TEAM_SLUG: Record<string, string> = {
