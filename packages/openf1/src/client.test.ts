@@ -103,3 +103,25 @@ describe("adapter mapping", () => {
     expect(sessionStatus("2026-07-01T00:00:00Z", "2026-07-01T01:00:00Z", now)).toBe("upcoming");
   });
 });
+
+describe("OpenF1Client.get (generic JSON, used for Jolpica)", () => {
+  const obj = z.object({ MRData: z.object({ total: z.string() }) });
+  it("validates object responses and sends the configured user agent", async () => {
+    const { c, fetchImpl } = client([res(200, { MRData: { total: "3" } })], { userAgent: "Test/1.0" });
+    expect(await c.get("current.json", {}, obj, 60)).toEqual({ MRData: { total: "3" } });
+    const init = (fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1];
+    expect((init.headers as Record<string, string>)["user-agent"]).toBe("Test/1.0");
+  });
+  it("retries opted-in statuses (403 burst shedding) and otherwise fails fast", async () => {
+    const a = client([res(403, {}), res(200, { MRData: { total: "1" } })], { retryStatuses: [403] });
+    expect(await a.c.get("x", {}, obj, 60)).toEqual({ MRData: { total: "1" } });
+    expect(a.fetchImpl).toHaveBeenCalledTimes(2);
+    const b = client([res(403, {})]);
+    await expect(b.c.get("x", {}, obj, 60)).rejects.toMatchObject({ status: 403 });
+    expect(b.fetchImpl).toHaveBeenCalledTimes(1);
+  });
+  it("does not turn a 404 into [] when notFoundAsEmpty is off", async () => {
+    const { c } = client([res(404, {})], { notFoundAsEmpty: false });
+    await expect(c.get("x", {}, obj, 60)).rejects.toBeInstanceOf(UpstreamError);
+  });
+});
